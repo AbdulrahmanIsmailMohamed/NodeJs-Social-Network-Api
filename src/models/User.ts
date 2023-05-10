@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import bcrypt from "bcrypt";
 
 import UserInterface from "interfaces/user.Interface";
 
@@ -18,7 +19,8 @@ const userSchema = new Schema<UserInterface>(
         },
         password: {
             type: String,
-            required: true
+            required: true,
+            select: false
         },
         number: {
             type: String,
@@ -43,6 +45,13 @@ const userSchema = new Schema<UserInterface>(
     },
     { timestamps: true }
 );
+
+userSchema.pre("save", function (next) {
+    if (this.isNew || this.isModified(this.password)) {
+        this.password = bcrypt.hashSync(this.password, 12);
+    }
+    next();
+})
 
 const User = model("User", userSchema);
 
