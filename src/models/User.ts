@@ -35,7 +35,11 @@ const userSchema = new Schema<UserInterface>(
         friendsRequest: [{
             type: Schema.Types.ObjectId,
             ref: "User"
-        }]
+        }],
+        active: {
+            type: Boolean,
+            default: true
+        }
     },
     { timestamps: true }
 );

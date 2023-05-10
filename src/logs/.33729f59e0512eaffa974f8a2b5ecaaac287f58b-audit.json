@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/media/abdulrahman/BeBo/Programming/Backend/Nodejs/myWork/NodeJs-Soial-Network-Api/src/logs/.33729f59e0512eaffa974f8a2b5ecaaac287f58b-audit.json",
+    "files": [
+        {
+            "date": 1683754147555,
+            "name": "/media/abdulrahman/BeBo/Programming/Backend/Nodejs/myWork/NodeJs-Soial-Network-Api/src/logs/application-2023-05-10.log",
+            "hash": "78153621df5dca374df43e11aef437fb28aa2a216a77bfe85a49472595ca128d"
+        }
+    ],
+    "hashType": "sha256"
+}

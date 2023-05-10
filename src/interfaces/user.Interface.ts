@@ -3,13 +3,14 @@ import { Document } from "mongoose";
 interface UserInterface extends Document {
     firstName: string,
     lastName: string,
-    address?: string,
     number: string,
-    profileImage?: string,
     email: string,
     password: string,
+    address?: string,
     friends?: Array<object>,
-    friendsRequest?: Array<object>
+    profileImage?: string,
+    friendsRequest?: Array<object>,
+    active?:Boolean
 }
 
 export default UserInterface;
