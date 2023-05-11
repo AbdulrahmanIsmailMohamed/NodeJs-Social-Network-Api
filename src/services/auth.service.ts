@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { NextFunction } from 'express';
 
 import User from "../models/User";
 import { errorHandling } from "../utils/errorHandling";
@@ -14,10 +15,12 @@ class AuthService {
         const user = await errorHandling(User.create(userData));
         return this.senitizeData.userRegister(user);
     }
-    login = async (userData: any): Promise<any> => {
-        console.log(userData);
-
-        const user = await errorHandling(User.findOne({ email: userData.email }));
+    login = async (userData: any, next: NextFunction): Promise<any> => {
+        const user = await errorHandling(User.findOneAndUpdate(
+            { email: userData.email },
+            { active: true },
+            { new: true }
+        ));
         if (!user || !bcrypt.compareSync(userData.password, user.password)) {
             return Promise.reject(new APIError("Invalid email or password", 401));
         }

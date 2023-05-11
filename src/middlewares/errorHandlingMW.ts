@@ -15,7 +15,6 @@ const errorForProduction = (err: APIError, res: Response) =>
         message: err.message
     });
 
-
 export const errorHandling = (err: APIError, req: Request, res: Response, next: NextFunction) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || "Error";
@@ -23,5 +22,11 @@ export const errorHandling = (err: APIError, req: Request, res: Response, next: 
         errorForDevelopment(err, res);
     } else {
         errorForProduction(err, res);
+        if (err.name === "JsonWebTokenError") {
+            new APIError("Invalid Token, Please Login..", 401);
+        }
+        if (err.name === "TokenExpiredError") {
+            new APIError("Expire Token, Please Login again..", 401);
+        }
     }
 }

@@ -1,4 +1,4 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import compression from "compression";
 import cors from "cors";
 import morgan from "morgan";
@@ -9,6 +9,7 @@ import connectDB from "./config/connect";
 import { errorHandling } from "./middlewares/errorHandlingMW";
 import { mounter } from "./routes";
 import { morganStream } from "./logger";
+import APIError from "./utils/apiError";
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
@@ -26,15 +27,18 @@ app.use(express.urlencoded({ extended: false, limit: "20kb" }));
 app.use(express.json({ limit: "20kb" }));
 
 if (process.env.NODE_ENV === "development") {
-    app.use(morgan("tiny", { stream: morganStream}));
+    app.use(morgan("tiny", { stream: morganStream }));
     console.log(`mode: ${process.env.NODE_ENV}`);
 }
 
-// Glopal error Handling in express
-app.use(errorHandling);
-
 // routes
 mounter(API, app);
+app.all('*', (req: Request, res: Response, next: NextFunction) => {
+    next(new APIError(`Can't Find This Route ${req.originalUrl}!!`, 404));
+});
+
+// Glopal error Handling in express
+app.use(errorHandling);
 
 // connectDB And start server
 connectDB();
@@ -54,5 +58,15 @@ process.on("unhandledRejection", (err: Error) => {
     server.close(() => {
         console.log("Server Shut Down....");
         process.exit(1);
+    });
+});
+
+// Handling synchronous exciption
+process.on("uncaughtException", (err) => {
+    console.log({
+        unhandlingException: true,
+        nameError: `${err.name} `,
+        message: `${err.message}`,
+        stack: `${err.stack}`
     });
 });
