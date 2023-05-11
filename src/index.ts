@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import connectDB from "./config/connect";
-import { errorHandling } from "./middlewares/errorHandlingMW";
+import ErrorHandlingMiddleware from "./middlewares/errorHandlingMW";
 import { mounter } from "./routes";
 import { morganStream } from "./logger";
 import APIError from "./utils/apiError";
@@ -38,6 +38,9 @@ app.all('*', (req: Request, res: Response, next: NextFunction) => {
 });
 
 // Glopal error Handling in express
+const errorHandling = (err: APIError, req: Request, res: Response, next: NextFunction) => {
+    ErrorHandlingMiddleware.handle(err, req, res, next);
+};
 app.use(errorHandling);
 
 // connectDB And start server
