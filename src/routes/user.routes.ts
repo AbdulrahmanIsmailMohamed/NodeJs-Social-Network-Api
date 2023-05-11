@@ -7,7 +7,6 @@ const userContrller = new UserController()
 
 router
     .route("/")
-    .post(userContrller.createUser)
     .get(userContrller.getUsers)
 
 router

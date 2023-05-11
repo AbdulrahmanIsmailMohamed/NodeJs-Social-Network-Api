@@ -15,12 +15,12 @@ const userSchema = new Schema<UserInterface>(
         },
         email: {
             type: String,
-            required: true
+            required: true,
+            unique: true
         },
         password: {
             type: String,
-            required: true,
-            select: false
+            required: true
         },
         number: {
             type: String,
@@ -40,6 +40,7 @@ const userSchema = new Schema<UserInterface>(
         }],
         active: {
             type: Boolean,
+            select: true,
             default: true
         }
     },

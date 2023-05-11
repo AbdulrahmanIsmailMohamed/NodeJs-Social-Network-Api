@@ -1,17 +1,16 @@
+import bcrypt from 'bcrypt';
+
+import APIError from "../utils/apiError";
 import UserInterface from "../interfaces/user.Interface";
 import User from "../models/User";
 import { errorHandling } from "../utils/errorHandling";
 
 class UserService {
-    createUser = async (userData: any): Promise<UserInterface> => {
-        const user = await errorHandling(User.create(userData));
-        return user;
-    }
-    updateUser = async (userData: UserInterface, userId: string): Promise<UserInterface> => {
+    updateUser = async (userData: UserInterface, userId: string): Promise<any> => {
         const user = await errorHandling(User.findByIdAndUpdate(userId, userData, { new: true }))
         return user
     }
-    inActiveUser = async (userId: string): Promise<UserInterface> => {
+    inActiveUser = async (userId: string): Promise<any> => {
         const user = await errorHandling(User.findByIdAndUpdate(
             userId,
             { active: false },
@@ -19,9 +18,13 @@ class UserService {
         ));
         return user
     }
-    getUsers = async () => {
+    getUsers = async (): Promise<any> => {
         const users = errorHandling(await User.find({ active: true }));
         return users;
+    }
+    getUser = async (userId: string): Promise<any> => {
+        const user = errorHandling(await User.findById(userId));
+        return user;
     }
 }
 
