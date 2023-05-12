@@ -1,10 +1,22 @@
 import { protectRoute } from "../config/auth";
 import FriendsController from "../controllers/friends.controller";
-import express, { Router } from "express";
+import { Router } from "express";
 
-const router: Router = express.Router();
+const router: Router = Router();
 const friendController = new FriendsController()
 
-router.patch("/:id",protectRoute, friendController.friendRequest)
+router.use(protectRoute)
+
+router
+    .route("/")
+    .get(friendController.getFriends)
+
+router
+    .route("/:id")
+    .patch(friendController.friendRequest)
+
+router
+    .patch("/accept/:id", friendController.acceptFriendRequest)
+    .delete("/cancel/:id", friendController.cancelFriendRequest)
 
 export default router;

@@ -20,8 +20,6 @@ export const protectRoute = asyncHandler(
         const decoded = jwt.verify(token, process.env.JWT_SEC) as DecodedToken;
         if (!decoded) return next(new APIError("Invalid Token", 401));
         const user = await User.findById(decoded.userId);
-        console.log(user);
-
         if (!user)
             return next(new APIError("The user associated with this token does not exist", 401))
         if (!user.active)

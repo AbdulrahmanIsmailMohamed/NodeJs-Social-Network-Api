@@ -8,7 +8,7 @@ class SenitizeData {
             lastName: user.lastName,
             email: user.email,
         }
-    )
+    );
     userRegister = (user: UserInterface) => (
         {
             _id: user._id,
@@ -17,6 +17,12 @@ class SenitizeData {
             email: user.email,
             number: user.number,
             address: user.address,
+        }
+    );
+    friends = (user: UserInterface) => (
+        {
+            _id: user._id,
+            friends: user.friends
         }
     )
 }

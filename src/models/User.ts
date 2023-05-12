@@ -40,7 +40,6 @@ const userSchema = new Schema<UserInterface>(
         }],
         active: {
             type: Boolean,
-            select: true,
             default: true
         }
     },

@@ -1,9 +1,9 @@
-import express, { Router } from "express";
+import  { Router } from "express";
 
 import AuthController from "../controllers/auth.controller";
 import { loginValidator, registerValidor } from "../utils/validator/auth.validator";
 
-const router: Router = express.Router();
+const router: Router = Router();
 const authController = new AuthController();
 
 router
