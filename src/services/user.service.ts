@@ -1,6 +1,3 @@
-import bcrypt from 'bcrypt';
-
-import APIError from "../utils/apiError";
 import UserInterface from "../interfaces/user.Interface";
 import User from "../models/User";
 import { errorHandling } from "../utils/errorHandling";
@@ -19,11 +16,11 @@ class UserService {
         return user
     }
     getUsers = async (): Promise<any> => {
-        const users = errorHandling(await User.find({ active: true }));
+        const users = await errorHandling(User.find({ active: true }).select("-password"));
         return users;
     }
     getUser = async (userId: string): Promise<any> => {
-        const user = errorHandling(await User.findById(userId));
+        const user = await errorHandling(User.findById(userId));
         return user;
     }
 }

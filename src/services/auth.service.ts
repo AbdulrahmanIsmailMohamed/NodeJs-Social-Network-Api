@@ -11,11 +11,11 @@ class AuthService {
     constructor() {
         this.senitizeData = new SenitizeData()
     }
-    register = async (userData: any): Promise<any> => {
+    register =  async (userData: any): Promise<any> => {
         const user = await errorHandling(User.create(userData));
         return this.senitizeData.userRegister(user);
     }
-    login = async (userData: any, next: NextFunction): Promise<any> => {
+    login = async (userData: any): Promise<any> => {
         const user = await errorHandling(User.findOneAndUpdate(
             { email: userData.email },
             { active: true },

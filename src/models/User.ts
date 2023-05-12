@@ -52,7 +52,12 @@ userSchema.pre("save", function (next) {
         this.password = bcrypt.hashSync(this.password, 12);
     }
     next();
-})
+});
+
+userSchema.pre(/^find/, function (next) {
+    this.select("-__v");
+    next()
+});
 
 const User = model("User", userSchema);
 
