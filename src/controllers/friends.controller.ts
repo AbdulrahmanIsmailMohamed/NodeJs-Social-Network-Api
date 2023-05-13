@@ -15,6 +15,8 @@ class FriendsController {
             friendRequestId: req.params.id
         }
         const friendRequest = await this.friendsService.friendRequest(userData);
+        console.log(friendRequest);
+        
         if (!friendRequest) return next(new APIError("Can't add friend request id!!", 400));
         res.status(200).json({ status: "Success", User: friendRequest });
     });

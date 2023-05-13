@@ -9,15 +9,28 @@ class FriendsService {
         this.senitizeData = new SenitizeData()
     }
     friendRequest = async (userData: any): Promise<any> => {
-        const friendRequest = await errorHandling(
-            User.findByIdAndUpdate(
-                userData.userId,
-                { $addToSet: { friendsRequest: userData.friendRequestId } },
-                { new: true }
-            )
+        const isUserExist = await errorHandling(
+            User.exists({
+                _id: userData.userId,
+                friends: userData.friendRequestId
+            })
         );
-        if (!friendRequest) throw new APIError("Can't Add fried request id!!", 400);
-        return friendRequest;
+        console.log(isUserExist);
+
+        if (!isUserExist) {
+            const friendRequest = await errorHandling(
+                User.findByIdAndUpdate(
+                    userData.userId,
+                    { $addToSet: { friendsRequest: userData.friendRequestId } },
+                    { new: true }
+                )
+            );
+            console.log(friendRequest);
+
+            if (!friendRequest) throw new APIError("Can't Add fried request id!!", 400);
+            return friendRequest;
+        }
+        else throw new APIError("User is exist in friends", 400);
     }
     acceptFriendRequest = async (userData: any): Promise<any> => {
         const user = await errorHandling(
@@ -28,9 +41,12 @@ class FriendsService {
             )
         );
         if (!user) throw new APIError("Can't Find User for this id!!", 404);
-        user.friends.push(userData.friendRequestId);
-        await user.save();
-        return user;
+        if (!user.friends.includes(userData.friendRequestId)) {
+            user.friends.push(userData.friendRequestId);
+            await user.save();
+            return user;
+        }
+        else throw new APIError("the user is already exist in friends", 400);
     }
     cancelFriendRequest = async (userData: any): Promise<string> => {
         const user = await errorHandling(
