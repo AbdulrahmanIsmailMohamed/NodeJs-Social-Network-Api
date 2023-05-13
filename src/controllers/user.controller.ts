@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import UserService from "../services/user.service";
 import { asyncHandler } from '../middlewares/asyncHandlerMW';
 import APIError from "../utils/apiError";
+import AuthenticatedRequest from "interfaces/authenticatedRequest.interface";
 
 class UserController {
     private userService: UserService;
@@ -19,8 +20,8 @@ class UserController {
         if (!users) return next(new APIError("The users not found", 404));
         res.status(200).json({ status: "Success", result: users.length, users });
     });
-    getUser = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const user = await this.userService.getUser(req.params.id);
+    getUser = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+        const user = await this.userService.getUser(req.user._id);
         if (!user) return next(new APIError("The user not found", 404));
         res.status(200).json({ status: "Success", user });
     });

@@ -9,40 +9,62 @@ class FriendsController {
     constructor() {
         this.friendsService = new FriendsService();
     }
+
     friendRequest = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         const userData = {
             userId: req.user._id,
             friendRequestId: req.params.id
         }
         const friendRequest = await this.friendsService.friendRequest(userData);
-        console.log(friendRequest);
-        
         if (!friendRequest) return next(new APIError("Can't add friend request id!!", 400));
-        res.status(200).json({ status: "Success", User: friendRequest });
+        res.status(200).json({ status: "Success", message: friendRequest });
     });
+
+    getFriendsRequest = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        const friendsRequest = await this.friendsService.getFriendsRequest(req.user._id);
+        if (!friendsRequest) return next(new APIError("Not Found User", 404));
+        res.status(200).json({ status: "Success", friendsRequest })
+    });
+
     acceptFriendRequest = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         const userData = {
             userId: req.user._id,
             friendRequestId: req.params.id
         }
         const user = await this.friendsService.acceptFriendRequest(userData);
-        if(!user) return next(new APIError("Can't accept friend request", 404));
-        res.status(200).json({ status: "Success", user });
+        if (!user) return next(new APIError("Can't accept friend request", 404));
+        res.status(200).json({ status: "Success", message: user });
     });
+
     cancelFriendRequest = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         const userData = {
             userId: req.user._id,
             friendRequestId: req.params.id
         }
         const user = await this.friendsService.cancelFriendRequest(userData);
-        if(!user) return next(new APIError("Can't cancel friend request", 404));
-        res.status(200).json({ status: "Success", user });
+        if (!user) return next(new APIError("Can't cancel friend request", 404));
+        res.status(200).json({ status: "Success", message: user });
     });
-    getFriends = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        const friends = await this.friendsService.getFriends(req.user._id);
-        if (!friends) return next(new APIError("Not Found Friends", 404));
-        res.status(200).json({ status: "Success", friends });
-    });
+
+    deleteFriendFromFriends = asyncHandler(
+        async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+            const userData = {
+                userId: req.user._id,
+                friendId: req.params.id
+            }
+            const friends = await this.friendsService.deleteFriendFromFriends(userData);
+            if (!friends) return next(new APIError("Can't delete friend", 400));
+            res.status(200).json({ status: "Success", message: friends });
+        }
+    );
+
+    getFriends = asyncHandler(
+        async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+            const friends = await this.friendsService.getFriends(req.user._id);
+            if (!friends) return next(new APIError("Not Found Friends", 404));
+            res.status(200).json({ status: "Success", friends });
+        }
+    );
 }
 
 export default FriendsController;

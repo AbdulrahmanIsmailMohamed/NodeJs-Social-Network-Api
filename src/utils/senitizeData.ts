@@ -24,7 +24,7 @@ class SenitizeData {
             _id: user._id,
             friends: user.friends
         }
-    )
+    );
 }
 
 export default SenitizeData;

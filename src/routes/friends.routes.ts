@@ -7,6 +7,8 @@ const friendController = new FriendsController()
 
 router.use(protectRoute)
 
+router.get("/friendsRequest", friendController.getFriendsRequest)
+
 router
     .route("/")
     .get(friendController.getFriends)
@@ -18,5 +20,6 @@ router
 router
     .patch("/accept/:id", friendController.acceptFriendRequest)
     .delete("/cancel/:id", friendController.cancelFriendRequest)
+    .delete("/deleteFriend/:id", friendController.deleteFriendFromFriends)
 
 export default router;
