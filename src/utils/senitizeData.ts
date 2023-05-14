@@ -1,3 +1,4 @@
+import { PostInterface } from "../interfaces/post.interface";
 import UserInterface from "../interfaces/user.Interface";
 
 class SenitizeData {
@@ -25,6 +26,16 @@ class SenitizeData {
             friends: user.friends
         }
     );
+    post = (post: PostInterface) => (
+        {
+            _id: post._id,
+            post: post.post,
+            postType: post.postType,
+            image: post.image,
+            likes: post.likes,
+            share: post.share
+        }
+    )
 }
 
 export default SenitizeData;

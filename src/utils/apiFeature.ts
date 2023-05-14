@@ -46,11 +46,25 @@ export class APIFeature<T extends Document> {
         return this
     }
 
-    async exic(): Promise<{ users: T[], paginationResult: Paginate }> {
-        const users = await this.mongooseQuery
+    async exic(modelName: string = "user"): Promise<{
+        users: T[];
+        paginationResult: Paginate;
+        posts?: undefined;
+    } | {
+        posts: T[];
+        paginationResult: Paginate;
+        users?: undefined;
+    }> {
+        if (modelName === 'user') {
+            const users = await this.mongooseQuery
+                .sort({ createdAt: -1 })
+                .select("firstName lastName profileImage")
+            return { users, paginationResult: this.paginationResult }
+        }
+        const posts = await this.mongooseQuery
             .sort({ createdAt: -1 })
-            .select("firstName lastName profileImage")
-        return { users, paginationResult: this.paginationResult }
+        return { posts, paginationResult: this.paginationResult }
+
     }
 
 }

@@ -10,11 +10,13 @@ class UserController {
     constructor() {
         this.userService = new UserService()
     }
+
     updateUser = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const user = await this.userService.updateUser(req.body, req.params.id);
         if (!user) return next(new APIError("The User Can't Be Updated!", 400));
         res.status(200).json({ status: "Success", user });
     });
+
     getUsers = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const features = {
             keyword: req.query.keyword,
@@ -33,11 +35,13 @@ class UserController {
                 users: data.users
             });
     });
+
     getUser = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
         const user = await this.userService.getUser(req.user._id);
         if (!user) return next(new APIError("The user not found", 404));
         res.status(200).json({ status: "Success", user });
     });
+    
     inactiveUser = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const user = await this.userService.inActiveUser(req.params.id);
         if (!user) return next(new APIError("The user Not found!", 404));
