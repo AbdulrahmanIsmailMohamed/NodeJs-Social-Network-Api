@@ -19,17 +19,16 @@ class UserController {
         const features = {
             keyword: req.query.keyword,
             limit: req.query.limit || 5,
-            page: parseInt(req.params.page) * 1 || 1,
+            page: parseInt(req.query.page as string) || 1
         }
         const data = await this.userService.getUsers(features);
         if (!data) return next(new APIError("The users not found", 404));
         res.status(200)
             .json({
                 status: "Success",
-                resultData: {
+                paginationResult: {
                     countDocuments: data.users.length,
-                    limit: features.limit,
-                    currenPage: features.page
+                    ...data.paginationResult
                 },
                 users: data.users
             });
