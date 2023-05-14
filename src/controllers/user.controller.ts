@@ -16,9 +16,23 @@ class UserController {
         res.status(200).json({ status: "Success", user });
     });
     getUsers = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const users = await this.userService.getUsers();
-        if (!users) return next(new APIError("The users not found", 404));
-        res.status(200).json({ status: "Success", result: users.length, users });
+        const features = {
+            keyword: req.query.keyword,
+            limit: req.query.limit || 5,
+            page: parseInt(req.params.page) * 1 || 1,
+        }
+        const data = await this.userService.getUsers(features);
+        if (!data) return next(new APIError("The users not found", 404));
+        res.status(200)
+            .json({
+                status: "Success",
+                resultData: {
+                    countDocuments: data.users.length,
+                    limit: features.limit,
+                    currenPage: features.page
+                },
+                users: data.users
+            });
     });
     getUser = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
         const user = await this.userService.getUser(req.user._id);

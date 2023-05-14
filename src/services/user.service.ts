@@ -15,12 +15,32 @@ class UserService {
         ));
         return user
     }
-    getUsers = async (): Promise<any> => {
-        const users = await errorHandling(User.find({ active: true }).select("-password"));
-        return users;
+    getUsers = async (features: any): Promise<any> => {
+        // search
+        let filter = {};
+        if (features.keyword) {
+            filter = {
+                $or: [
+                    { firstName: { $regex: features.keyword, $options: "i" } },
+                    { lastName: { $regex: features.keyword, $options: "i" } }
+                ]
+            }
+        }
+        // pagination
+        const skip = (features.page - 1) * features.limit
+        const users = await errorHandling(
+            User.find({ $and: [filter, { active: true }] })
+                .select("firstName lastName profileImage")
+                .skip(skip)
+                .limit(features.limit)
+        );
+        return { users, skip };
     }
     getUser = async (userId: string): Promise<any> => {
-        const user = await errorHandling(User.findById(userId));
+        const user = await errorHandling(
+            User.findById(userId)
+                .select("-password -active")
+        );
         return user;
     }
 }
