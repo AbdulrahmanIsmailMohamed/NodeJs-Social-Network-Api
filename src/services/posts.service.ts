@@ -2,7 +2,6 @@ import APIError from "../utils/apiError";
 import Post from "../models/Post"
 import { errorHandling } from "../utils/errorHandling"
 import SenitizeData from "../utils/senitizeData";
-import { ObjectId } from "mongoose";
 import { APIFeature } from "../utils/apiFeature";
 
 export class PostService {
