@@ -9,10 +9,14 @@ export class CommentService {
         return comment;
     }
 
-    updateComment = async (data: any) => {
+    updateComment = async (data: any): Promise<any> => {
         const comment = await errorHandling(
             Comment.findOneAndUpdate(
-                { _id: data.commentId, userId: data.userId },
+                {
+                    _id: data.commentId,
+                    userId: data.userId,
+                    postId: data.postId
+                },
                 data.commentBody,
                 { new: true }
             )
@@ -21,11 +25,25 @@ export class CommentService {
         return comment
     }
 
-    deleteComment = async (data: any) => {
+    deleteComment = async (data: any): Promise<string> => {
         const comment = await errorHandling(
             Comment.findOneAndDelete({ _id: data.commentId, userId: data.userId })
         );
         if (!comment) throw new APIError("Can't delete comment", 400);
         return "Done";
+    }
+
+    getComments = async (postId: any): Promise<any> => {
+        const comments = await errorHandling(Comment.find({ postId }));
+        if (!comments) throw new APIError("can't find comments", 404);
+        return comments
+    }
+
+    getComment = async (data: any): Promise<any> => {
+        const comment = await errorHandling(
+            Comment.findOne({ _id: data.commentId, postId: data.postId })
+        );
+        if (!comment) throw new APIError("can't find comment", 404);
+        return comment
     }
 }
