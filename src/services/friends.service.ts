@@ -9,7 +9,7 @@ class FriendsService {
         this.senitizeData = new SenitizeData()
     }
 
-    friendRequest = async (userData: any): Promise<any> => {
+    sendFriendRequest = async (userData: any): Promise<any> => {
         const isUserExist = await errorHandling(
             User.exists({
                 _id: userData.userId,
@@ -51,6 +51,16 @@ class FriendsService {
         if (!user) throw new APIError("Can't Find User for this id!!", 404);
         if (!user.friends.includes(userData.friendRequestId)) {
             user.friends.push(userData.friendRequestId);
+
+            // Add the friend ID of the person who sent the friend request
+            await errorHandling(
+                User.findByIdAndUpdate(
+                    userData.friendRequestId,
+                    {
+                        $addToSet: { friends: userData.userId }
+                    }
+                )
+            )
             await user.save();
             return "friend request approved";
         }
@@ -80,7 +90,7 @@ class FriendsService {
         if (!user) throw new APIError("Can't Find User for this id!!", 404);
         return "The person has been removed from friends";
     }
-    
+
     getFriends = async (userId: any) => {
         const friends = await errorHandling(
             User.findById(userId)

@@ -10,12 +10,12 @@ class FriendsController {
         this.friendsService = new FriendsService();
     }
 
-    friendRequest = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    sendFriendRequest = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         const userData = {
             userId: req.user._id,
             friendRequestId: req.params.id
         }
-        const friendRequest = await this.friendsService.friendRequest(userData);
+        const friendRequest = await this.friendsService.sendFriendRequest(userData);
         if (!friendRequest) return next(new APIError("Can't add friend request id!!", 400));
         res.status(200).json({ status: "Success", message: friendRequest });
     });

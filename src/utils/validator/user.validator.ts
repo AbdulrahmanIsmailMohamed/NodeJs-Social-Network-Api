@@ -12,8 +12,6 @@ export const userIdValidator = [
     validatorMW
 ]
 
-
-
 export const updateUser = [
     check("id")
         .isMongoId()
