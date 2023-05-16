@@ -50,15 +50,19 @@ export class PostService {
     }
 
     getPosts = async (userId: any) => {
-        
         const query = {
             $or: [{ postType: "public" }, { postType: "friends" }],
-            // "userId.frinds": userId
         }
         const userPost = await errorHandling(
             Post.find(query)
-                .populate({ path: "userId", match: { friends: userId } })
+                .populate({
+                    path: "userId",
+                    // select: "firstName lastName profileImage friends",
+                    match: { friends: userId }
+                }).populate("userId", "firstName lastName imageProfile")
         )
+
+        
         // const countDocument = await errorHandling(Post.countDocuments({ userId: features.userId }))
         // const newPosts: any[] = []
 

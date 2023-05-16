@@ -39,10 +39,10 @@ const postShema = new Schema<PostInterface>(
     { timestamps: true }
 );
 
-postShema.pre(/^find/, function (next) {
-    this.populate("userId", "firstName lastName imageProfile friends");
-    next();
-})
+// postShema.pre(/^find/, function (next) {
+//     this.populate("userId", "firstName lastName imageProfile friends");
+//     next();
+// })
 
 const Post = model("Post", postShema);
 
