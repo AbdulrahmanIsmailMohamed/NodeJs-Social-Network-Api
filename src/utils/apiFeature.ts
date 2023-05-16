@@ -64,7 +64,6 @@ export class APIFeature<T extends Document> {
         const posts = await this.mongooseQuery
             .sort({ createdAt: -1 })
         return { posts, paginationResult: this.paginationResult }
-
     }
 
 }

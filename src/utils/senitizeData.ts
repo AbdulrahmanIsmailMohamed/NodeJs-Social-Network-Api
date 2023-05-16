@@ -29,6 +29,7 @@ class SenitizeData {
     post = (post: PostInterface) => (
         {
             _id: post._id,
+            userId: post.userId,
             post: post.post,
             postType: post.postType,
             image: post.image,

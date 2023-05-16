@@ -39,13 +39,13 @@ export class PostController {
         res.status(204).json({ status: "Success", message: post });
     });
 
-    getPosts = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    getUserPosts = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         const features = {
             limit: req.query.limit || 5,
             page: parseInt(req.query.page as string) * 1 || 1,
             userId: req.user._id
         };
-        const data = await this.postService.getPosts(features);
+        const data = await this.postService.getUserPosts(features);
         if (!data) return next(new APIError("Can't find posts", 404));
         res.status(200)
             .json({
@@ -54,7 +54,12 @@ export class PostController {
                     countDocumnt: data.posts.length,
                     ...data.paginationResult
                 },
-                posts: data.posts[0]
+                posts: data.posts
             });
     });
+
+    getPosts = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        const userPost = await this.postService.getPosts(req.user._id);
+        res.json(userPost)
+    })
 } 

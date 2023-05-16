@@ -13,10 +13,13 @@ const postController = new PostController()
 
 router.use(protectRoute)
 
+router.get("/me", postController.getUserPosts)
+
 router
     .route("/")
     .post(createPostValidor, postController.createPost)
     .get(postController.getPosts)
+
 
 router
     .route("/:id")
