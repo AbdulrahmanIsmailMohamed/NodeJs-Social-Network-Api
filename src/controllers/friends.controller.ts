@@ -3,6 +3,7 @@ import { asyncHandler } from "../middlewares/asyncHandlerMW";
 import FriendsService from "../services/friends.service";
 import AuthenticatedRequest from "interfaces/authenticatedRequest.interface";
 import APIError from "../utils/apiError";
+import { ObjectId } from "mongoose";
 
 class FriendsController {
     friendsService: FriendsService;
@@ -60,7 +61,8 @@ class FriendsController {
 
     getFriends = asyncHandler(
         async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-            const friends = await this.friendsService.getFriends(req.user._id);
+            const userId: ObjectId | string = req.params.id ? req.params.id : req.user._id;
+            const friends = await this.friendsService.getFriends(userId);
             if (!friends) return next(new APIError("Not Found Friends", 404));
             res.status(200).json({ status: "Success", friends });
         }

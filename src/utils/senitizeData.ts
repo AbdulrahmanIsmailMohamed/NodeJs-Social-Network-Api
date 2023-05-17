@@ -10,6 +10,18 @@ class SenitizeData {
             email: user.email,
         }
     );
+
+    user = (user: UserInterface) => (
+        {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            profileImage: user.profileImage,
+            friends: user.friends,
+            address: user.address
+        }
+    )
+
     userRegister = (user: UserInterface) => (
         {
             _id: user._id,

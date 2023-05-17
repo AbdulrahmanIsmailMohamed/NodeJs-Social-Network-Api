@@ -42,11 +42,11 @@ export class PostService {
         return "Done"
     }
 
-    getUserPosts = async (features: any) => {
+    getUserPost = async (features: any) => {
         const countDocument = await errorHandling(Post.countDocuments({ userId: features.userId }))
         const apiFeature = new APIFeature(Post.find({ userId: features.userId }), features)
             .pagination(countDocument);
-        const data = await apiFeature.exic("post");
+        const data = await apiFeature.exic("posts");
         return data;
     }
 
@@ -68,15 +68,7 @@ export class PostService {
                 { postType: "friends" }
             ],
         }
-        // const userPost = await errorHandling(
-        //     Post.find(query)
-        //         .populate({
-        //             path: "userId",
-        //             select: "firstName lastName profileImage",
-        //         })
-        // );
         const countPosts = await errorHandling(Post.countDocuments(query));
-        console.log(countPosts);
         
         const apiFeature = new APIFeature(Post.find(query), features)
             .pagination(countPosts);

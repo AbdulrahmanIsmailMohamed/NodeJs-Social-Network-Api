@@ -4,10 +4,19 @@ import UserInterface from "../interfaces/user.Interface";
 import User from "../models/User";
 import { errorHandling } from "../utils/errorHandling";
 import { APIFeature } from '../utils/apiFeature';
+import SenitizeData from '../utils/senitizeData';
 
 class UserService {
-    updateUser = async (userData: UserInterface, userId: string): Promise<any> => {
-        const user = await errorHandling(User.findByIdAndUpdate(userId, userData, { new: true }))
+    private senitizeData: SenitizeData;
+    constructor() {
+        this.senitizeData = new SenitizeData()
+    }
+
+    updateUser = async (userData: UserInterface, userId: string | ObjectId): Promise<any> => {
+        const user = await errorHandling(
+            User.findByIdAndUpdate(userId, userData, { new: true })
+                .select("firstName lastName profileImage address")
+        )
         return user
     }
 
@@ -20,6 +29,7 @@ class UserService {
         return user
     }
 
+    /** @access admin */
     getUsers = async (features: any): Promise<any> => {
         const countDocument = await errorHandling(User.countDocuments({ active: true }));
         const apiFeature = new APIFeature(User.find({ active: true }), features)
@@ -32,7 +42,7 @@ class UserService {
     getUser = async (userId: ObjectId | string): Promise<any> => {
         const user = await errorHandling(
             User.findOne({ _id: userId, active: true })
-                .select("-password -active")
+                .select("firstName lastName profileImage address")
         );
         return user;
     }

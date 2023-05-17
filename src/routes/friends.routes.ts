@@ -17,6 +17,7 @@ router
     .use(protectRoute)
     .get("/", friendController.getFriends)
     .get("/friendsRequest", friendController.getFriendsRequest)
+    .get("/:id", friendController.getFriends)
     .patch("/:id", sendFriendRequestValidator, friendController.sendFriendRequest)
     .patch("/accept/:id", acceptFriendRequestValidator, friendController.acceptFriendRequest)
     .delete("/cancel/:id", cancelFriendRequestValidator, friendController.cancelFriendRequest)

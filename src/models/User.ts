@@ -18,6 +18,9 @@ const userSchema = new Schema<UserInterface>(
             required: true,
             unique: true
         },
+        address: {
+            type: String,
+        },
         password: {
             type: String,
             required: true

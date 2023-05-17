@@ -8,18 +8,17 @@ import {
     updatePostValidor
 } from "../utils/validator/posts.validator";
 
-const router: Router = Router();
+const router: Router = Router({ mergeParams: true });
 const postController = new PostController()
 
 router.use(protectRoute)
 
-router.get("/me", postController.getUserPosts)
+router.get("/me", postController.getUserPost)
 
 router
     .route("/")
     .post(createPostValidor, postController.createPost)
     .get(postController.getFrinedsPosts)
-
 
 router
     .route("/:id")

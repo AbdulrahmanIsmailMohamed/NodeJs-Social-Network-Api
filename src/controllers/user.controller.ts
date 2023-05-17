@@ -12,8 +12,8 @@ class UserController {
         this.userService = new UserService()
     }
 
-    updateUser = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const user = await this.userService.updateUser(req.body, req.params.id);
+    updateUser = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+        const user = await this.userService.updateUser(req.body, req.user._id);
         if (!user) return next(new APIError("The User Can't Be Updated!", 400));
         res.status(200).json({ status: "Success", user });
     });
