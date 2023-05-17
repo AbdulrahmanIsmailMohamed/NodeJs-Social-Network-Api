@@ -10,7 +10,8 @@ interface UserInterface extends Document {
     address?: string,
     friends?: Array<object>,
     profileImage?: string,
-    friendsRequest?: Array<object>,
+    myFriendshipRequests?: Array<object>,
+    friendshipRequests?: Array<object>,
     active?: Boolean
 }
 

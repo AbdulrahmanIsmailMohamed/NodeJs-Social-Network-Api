@@ -13,7 +13,7 @@ class FriendsController {
     sendFriendRequest = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         const userData = {
             userId: req.user._id,
-            friendRequestId: req.params.id
+            friendId: req.params.id
         }
         const friendRequest = await this.friendsService.sendFriendRequest(userData);
         if (!friendRequest) return next(new APIError("Can't add friend request id!!", 400));
@@ -29,7 +29,7 @@ class FriendsController {
     acceptFriendRequest = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         const userData = {
             userId: req.user._id,
-            friendRequestId: req.params.id
+            friendId: req.params.id
         }
         const user = await this.friendsService.acceptFriendRequest(userData);
         if (!user) return next(new APIError("Can't accept friend request", 404));
@@ -39,7 +39,7 @@ class FriendsController {
     cancelFriendRequest = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         const userData = {
             userId: req.user._id,
-            friendRequestId: req.params.id
+            friendId: req.params.id
         }
         const user = await this.friendsService.cancelFriendRequest(userData);
         if (!user) return next(new APIError("Can't cancel friend request", 404));

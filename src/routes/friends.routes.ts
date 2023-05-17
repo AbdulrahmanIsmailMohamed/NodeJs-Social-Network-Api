@@ -3,7 +3,11 @@ import { Router } from "express";
 import { userIdValidator } from "../utils/validator/user.validator";
 import { protectRoute } from "../config/auth";
 import FriendsController from "../controllers/friends.controller";
-import { acceptFriendRequestValidator, sendFriendRequestValidator } from '../utils/validator/friends.validator';
+import {
+    acceptFriendRequestValidator,
+    deleteFriendValidator,
+    sendFriendRequestValidator
+} from '../utils/validator/friends.validator';
 
 const router: Router = Router();
 const friendController = new FriendsController()
@@ -15,6 +19,6 @@ router
     .patch("/:id", sendFriendRequestValidator, friendController.sendFriendRequest)
     .patch("/accept/:id", acceptFriendRequestValidator, friendController.acceptFriendRequest)
     .delete("/cancel/:id", userIdValidator, friendController.cancelFriendRequest)
-    .delete("/deleteFriend/:id", userIdValidator, friendController.deleteFriendFromFriends)
+    .delete("/deleteFriend/:id", deleteFriendValidator, friendController.deleteFriendFromFriends)
 
 export default router;

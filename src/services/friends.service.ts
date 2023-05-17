@@ -3,31 +3,54 @@ import User from "../models/User";
 import APIError from "../utils/apiError";
 import SenitizeData from "../utils/senitizeData";
 import { ObjectId } from "mongoose";
+
+type BulkWriteOperation<T> =
+    | {
+        updateOne: {
+            filter: T;
+            update: { $addToSet: { friendshipRequests: any } };
+        };
+    }
+    | {
+        updateOne: {
+            filter: T;
+            update: { $addToSet: { myFriendshipRequests: any } };
+        };
+    };
+
 class FriendsService {
     senitizeData: SenitizeData;
     constructor() {
         this.senitizeData = new SenitizeData()
     }
 
-    sendFriendRequest = async (userData: any): Promise<any> => {
-        const isUserExist = await errorHandling(
-            User.exists({
-                _id: userData.userId,
-                friends: userData.friendRequestId
-            })
+    sendFriendRequest = async (data: any): Promise<any> => {
+        const { userId, friendId } = data;
+        let operations: BulkWriteOperation<any>[] = [
+            // add operation to update friends's documents
+            {
+                updateOne: {
+                    filter: { _id: friendId },
+                    update: { $addToSet: { friendshipRequests: userId } },
+                }
+            },
+            // add operation to update my documents
+            {
+                updateOne: {
+                    filter: { _id: userId },
+                    update: { $addToSet: { myFriendshipRequests: friendId } },
+                }
+            }
+        ];
+
+        const result = await errorHandling(
+            User.bulkWrite(operations as any[], {})
         );
-        if (!isUserExist) {
-            const friendRequest = await errorHandling(
-                User.findByIdAndUpdate(
-                    userData.userId,
-                    { $addToSet: { friendsRequest: userData.friendRequestId } },
-                    { new: true }
-                )
-            );
-            if (!friendRequest) throw new APIError("Can't Add fried request id!!", 400);
-            return "Friend request sent";
+
+        if (result.modifiedCount < 0) {
+            throw new APIError("Can't Add friedship request id!!", 400);
         }
-        else throw new APIError("User is exist in friends", 400);
+        return "Friendship request sent";
     }
 
     getFriendsRequest = async (userId: ObjectId): Promise<any> => {
@@ -41,54 +64,93 @@ class FriendsService {
     }
 
     acceptFriendRequest = async (userData: any): Promise<any> => {
-        const user = await errorHandling(
-            User.findByIdAndUpdate(
-                userData.userId,
-                { $pull: { friendsRequest: userData.friendRequestId } },
-                { new: true }
-            )
-        );
-        if (!user) throw new APIError("Can't Find User for this id!!", 404);
-        if (!user.friends.includes(userData.friendRequestId)) {
-            user.friends.push(userData.friendRequestId);
+        const { userId, friendId } = userData;
+        const operations = [
+            {
+                updateOne: {
+                    filter: { _id: userId },
+                    update: {
+                        $pull: { myFriendshipRequests: friendId },
+                        $addToSet: { friends: friendId }
+                    },
+                },
+            },
+            {
+                updateOne: {
+                    filter: { _id: friendId },
+                    update: {
+                        $pull: { friendshipRequests: userId },
+                        $addToSet: { friends: userId }
+                    },
+                }
+            }
+        ];
 
-            // Add the friend ID of the person who sent the friend request
-            await errorHandling(
-                User.findByIdAndUpdate(
-                    userData.friendRequestId,
-                    {
-                        $addToSet: { friends: userData.userId }
-                    }
-                )
-            )
-            await user.save();
-            return "friend request approved";
+        const result = await errorHandling(
+            User.bulkWrite(operations as [], {})
+        );
+
+        if (result.modifiedCount < 0) {
+            throw new APIError("The user is already exist in friends", 400);
         }
-        else throw new APIError("the user is already exist in friends", 400);
+        return "The friendship request was accepted"
     }
 
-    cancelFriendRequest = async (userData: any): Promise<string> => {
-        const user = await errorHandling(
-            User.findByIdAndUpdate(
-                userData.userId,
-                { $pull: { friendsRequest: userData.friendRequestId } },
-                { new: true }
-            )
+    cancelFriendRequest = async (userData: any): Promise<any> => {
+        const { userId, friendId } = userData;
+        const operations = [
+            {
+                updateOne: {
+                    filter: { _id: userId },
+                    update: {
+                        $pull: { myFriendshipRequests: friendId },
+                    },
+                },
+            },
+            {
+                updateOne: {
+                    filter: { _id: friendId },
+                    update: {
+                        $pull: { friendshipRequests: userId },
+                        $addToSet: { friends: userId }
+                    },
+                }
+            }
+        ];
+
+        const result = await errorHandling(
+            User.bulkWrite(operations as [], {})
         );
-        if (!user) throw new APIError("Can't Find User for this id!!", 404);
+        if (result.modifiedCount < 0) {
+            throw new APIError("Can't Find User for this id!!", 404);
+        }
         return "Friend request cancelled";
     }
 
     deleteFriendFromFriends = async (userData: any): Promise<string> => {
-        const user = await errorHandling(
-            User.findByIdAndUpdate(
-                userData.userId,
-                { $pull: { friends: userData.friendId } },
-                { new: true }
-            ).select("friends")
+        const { userId, friendId } = userData;
+        const operations = [
+            {
+                updateOne: {
+                    filter: { _id: userId },
+                    update: { $pull: { friends: friendId } }
+                }
+            },
+            {
+                updateOne: {
+                    filter: { _id: friendId },
+                    update: { $pull: { friends: userId } }
+                }
+            }
+        ];
+
+        const result = await errorHandling(
+            User.bulkWrite(operations as [], {})
         );
-        if (!user) throw new APIError("Can't Find User for this id!!", 404);
-        return "The person has been removed from friends";
+        if (result.modifiedCount < 0) {
+            throw new APIError("Can't delete your friend!!", 400);
+        }
+        return "Your Friend has been removed";
     }
 
     getFriends = async (userId: any) => {

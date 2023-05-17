@@ -9,13 +9,28 @@ export const sendFriendRequestValidator = [
         .isMongoId()
         .withMessage("Invalid id format")
         .custom(async (val, { req }) => {
-            if (val === req.user._id.toString()) {
+            if (val === req.user._id.toString())
                 throw new APIError("You can't send friendRequest for you", 400);
-            }
+            const isFriend = await errorHandling(
+                User.exists({
+                    _id: req.user._id,
+                    friends: val,
+                }).lean()
+            );
+            const isFriendRequestExist = await errorHandling(
+                User.exists({
+                    _id: req.user._id,
+                    myFriendshipRequests: val,
+                }).lean()
+            );
+            if (isFriend)
+                throw new APIError("this user is exist in your friends", 400);
+            if (isFriendRequestExist)
+                throw new APIError("You have already sent a friend request to this user", 400);
             return true
         }),
     validatorMW
-]
+];
 
 export const acceptFriendRequestValidator = [
     check("id")
@@ -23,14 +38,31 @@ export const acceptFriendRequestValidator = [
         .withMessage("Invalid id format")
         .custom(async (val, { req }) => {
             const isExistInfriendRequest = await errorHandling(
-                User.findOne({
+                User.exists({
                     _id: req.user._id,
-                    friendsRequest: val
-                })
+                    friendshipRequests: val,
+                    friends: { $ne: val }
+                }).lean()
             );
-            console.log(isExistInfriendRequest);
             if (isExistInfriendRequest) return true
-            throw new APIError("This Id not exist in friendsRequests", 400);
+            throw new APIError("Can't accept this user", 400);
         }),
     validatorMW
-]
+];
+
+export const deleteFriendValidator = [
+    check("id")
+        .isMongoId()
+        .withMessage("Invalid id format")
+        .custom(async (val, { req }) => {
+            const isFriend = await errorHandling(
+                User.exists({
+                    _id: req.user._id,
+                    friends: val
+                }).lean()
+            );
+            if (isFriend) return true;
+            throw new APIError("Your friend is already deleted!!", 400);
+        }),
+    validatorMW
+];
