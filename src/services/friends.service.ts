@@ -4,20 +4,6 @@ import APIError from "../utils/apiError";
 import SenitizeData from "../utils/senitizeData";
 import { ObjectId } from "mongoose";
 
-type BulkWriteOperation<T> =
-    | {
-        updateOne: {
-            filter: T;
-            update: { $addToSet: { friendshipRequests: any } };
-        };
-    }
-    | {
-        updateOne: {
-            filter: T;
-            update: { $addToSet: { myFriendshipRequests: any } };
-        };
-    };
-
 class FriendsService {
     senitizeData: SenitizeData;
     constructor() {
@@ -26,7 +12,7 @@ class FriendsService {
 
     sendFriendRequest = async (data: any): Promise<any> => {
         const { userId, friendId } = data;
-        let operations: BulkWriteOperation<any>[] = [
+        let operations = [
             // add operation to update friends's documents
             {
                 updateOne: {
@@ -44,7 +30,7 @@ class FriendsService {
         ];
 
         const result = await errorHandling(
-            User.bulkWrite(operations as any[], {})
+            User.bulkWrite(operations as [], {})
         );
 
         if (result.modifiedCount < 0) {
@@ -70,7 +56,7 @@ class FriendsService {
                 updateOne: {
                     filter: { _id: userId },
                     update: {
-                        $pull: { myFriendshipRequests: friendId },
+                        $pull: { friendshipRequests: friendId },
                         $addToSet: { friends: friendId }
                     },
                 },
@@ -79,7 +65,7 @@ class FriendsService {
                 updateOne: {
                     filter: { _id: friendId },
                     update: {
-                        $pull: { friendshipRequests: userId },
+                        $pull: { myFriendshipRequests: userId },
                         $addToSet: { friends: userId }
                     },
                 }
@@ -112,7 +98,6 @@ class FriendsService {
                     filter: { _id: friendId },
                     update: {
                         $pull: { friendshipRequests: userId },
-                        $addToSet: { friends: userId }
                     },
                 }
             }

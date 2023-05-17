@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import { ObjectId } from 'mongoose';
 
 import UserInterface from "../interfaces/user.Interface";
 import User from "../models/User";
@@ -29,9 +29,9 @@ class UserService {
         return data
     }
 
-    getUser = async (userId: ObjectId): Promise<any> => {
+    getUser = async (userId: ObjectId | string): Promise<any> => {
         const user = await errorHandling(
-            User.findById(userId)
+            User.findOne({ _id: userId, active: true })
                 .select("-password -active")
         );
         return user;

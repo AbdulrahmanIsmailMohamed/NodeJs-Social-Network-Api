@@ -5,6 +5,7 @@ import { protectRoute } from "../config/auth";
 import FriendsController from "../controllers/friends.controller";
 import {
     acceptFriendRequestValidator,
+    cancelFriendRequestValidator,
     deleteFriendValidator,
     sendFriendRequestValidator
 } from '../utils/validator/friends.validator';
@@ -18,7 +19,7 @@ router
     .get("/friendsRequest", friendController.getFriendsRequest)
     .patch("/:id", sendFriendRequestValidator, friendController.sendFriendRequest)
     .patch("/accept/:id", acceptFriendRequestValidator, friendController.acceptFriendRequest)
-    .delete("/cancel/:id", userIdValidator, friendController.cancelFriendRequest)
+    .delete("/cancel/:id", cancelFriendRequestValidator, friendController.cancelFriendRequest)
     .delete("/deleteFriend/:id", deleteFriendValidator, friendController.deleteFriendFromFriends)
 
 export default router;

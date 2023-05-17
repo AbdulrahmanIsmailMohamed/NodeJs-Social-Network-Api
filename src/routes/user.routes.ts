@@ -8,7 +8,7 @@ const userContrller = new UserController()
 
 router.use(protectRoute)
 
-router.get("/getMe",userContrller.getUser)
+router.get("/getMe", userContrller.getUser)
 
 router
     .route("/")
@@ -16,6 +16,7 @@ router
 
 router
     .route("/:id")
+    .get(userContrller.getUser)
     .delete(userContrller.inactiveUser)
     .patch(userContrller.updateUser)
 
