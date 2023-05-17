@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Model, Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 
 import UserInterface from "interfaces/user.Interface";
@@ -49,6 +49,10 @@ const userSchema = new Schema<UserInterface>(
         active: {
             type: Boolean,
             default: true
+        },
+        isAdmin: {
+            type: Boolean,
+            default: false
         }
     },
     { timestamps: true }
@@ -66,6 +70,6 @@ userSchema.pre(/^find/, function (next) {
     next()
 });
 
-const User = model("User", userSchema);
+const User: Model<UserInterface> = model<UserInterface>("User", userSchema);
 
 export default User;

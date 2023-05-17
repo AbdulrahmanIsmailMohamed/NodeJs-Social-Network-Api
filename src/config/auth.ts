@@ -28,3 +28,12 @@ export const protectRoute = asyncHandler(
         next();
     }
 );
+
+export const allowTo = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        console.log(req.user.isAdmin);
+        if (!req.user.isAdmin) {
+            return next(new APIError("Can't access this route", 401));
+        }
+        next();
+    })

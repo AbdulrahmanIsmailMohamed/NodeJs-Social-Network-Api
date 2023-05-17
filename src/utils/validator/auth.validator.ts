@@ -83,5 +83,12 @@ export const registerValidor = [
         .withMessage("The address must be String")
         .isLength({ min: 2 })
         .withMessage("The address invalid"),
+    check("isAdmin")
+        .optional()
+        .isEmpty()
+        .withMessage("Can't access this field")
+        .custom((val, { req }) => {
+            delete req.body.isAdmin
+        }),
     validatorMW
 ];
