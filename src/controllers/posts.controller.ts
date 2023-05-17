@@ -45,21 +45,31 @@ export class PostController {
             page: parseInt(req.query.page as string) * 1 || 1,
             userId: req.user._id
         };
-        const data = await this.postService.getUserPosts(features);
-        if (!data) return next(new APIError("Can't find posts", 404));
+        const result = await this.postService.getUserPosts(features);
+        if (!result) return next(new APIError("Can't find posts", 404));
+        const { paginationResult, posts } = result;
         res.status(200)
             .json({
                 status: "Success",
-                paginationResult: {
-                    countDocumnt: data.posts.length,
-                    ...data.paginationResult
-                },
-                posts: data.posts
+                paginationResult,
+                posts
             });
     });
 
-    getPosts = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        const userPost = await this.postService.getPosts(req.user._id);
-        res.json(userPost)
+    getFrinedsPosts = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        const features = {
+            limit: req.query.limit || 5,
+            page: parseInt(req.query.page as string) * 1 || 1,
+            userId: req.user._id
+        };
+        const result = await this.postService.getFriendsPosts(features);
+        if (!result) return next(new APIError("Can't find posts for this user", 404));
+        const { paginationResult, posts } = result;
+        res.status(200)
+            .json({
+                status: "Success",
+                paginationResult,
+                posts
+            })
     })
 } 

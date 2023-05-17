@@ -18,7 +18,7 @@ router.get("/me", postController.getUserPosts)
 router
     .route("/")
     .post(createPostValidor, postController.createPost)
-    .get(postController.getPosts)
+    .get(postController.getFrinedsPosts)
 
 
 router

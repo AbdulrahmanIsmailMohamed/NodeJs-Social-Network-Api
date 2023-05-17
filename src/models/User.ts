@@ -32,7 +32,8 @@ const userSchema = new Schema<UserInterface>(
         },
         friends: [{
             type: Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User",
+            maxlength: 2
         }],
         friendshipRequests: [{
             type: Schema.Types.ObjectId,

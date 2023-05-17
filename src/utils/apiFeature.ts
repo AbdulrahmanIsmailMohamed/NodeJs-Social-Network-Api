@@ -14,7 +14,8 @@ export class APIFeature<T extends Document> {
         this.paginationResult = {
             limit: 0,
             currentPage: 0,
-            numberOfPages: 0
+            numberOfPages: 0,
+            countDocument: 0
         }
     }
 
@@ -35,7 +36,8 @@ export class APIFeature<T extends Document> {
         const skip = (this.queryString.page - 1) * this.queryString.limit;
         const endIndex: number = this.queryString.page * this.queryString.limit;
         this.paginationResult = {
-            numberOfPages: Math.ceil(this.queryString.limit / countDocument),
+            numberOfPages: Math.floor(this.queryString.limit / countDocument),
+            countDocument,
             currentPage: this.queryString.page,
             limit: this.queryString.limit
         };
@@ -60,6 +62,12 @@ export class APIFeature<T extends Document> {
                 .sort({ createdAt: -1 })
                 .select("firstName lastName profileImage")
             return { users, paginationResult: this.paginationResult }
+        }
+        if (modelName === "posts") {
+            const posts = await this.mongooseQuery
+                .sort({ createdAt: -1 })
+                .populate("userId", "firstName lastName profileImage");
+            return { posts, paginationResult: this.paginationResult }
         }
         const posts = await this.mongooseQuery
             .sort({ createdAt: -1 })

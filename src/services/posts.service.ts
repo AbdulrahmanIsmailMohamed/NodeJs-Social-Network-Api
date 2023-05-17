@@ -5,6 +5,7 @@ import SenitizeData from "../utils/senitizeData";
 import { APIFeature } from "../utils/apiFeature";
 import User from '../models/User';
 import { query } from "express";
+import { features } from "process";
 
 export class PostService {
     private senitizeData: SenitizeData;
@@ -49,30 +50,38 @@ export class PostService {
         return data;
     }
 
-    getPosts = async (userId: any) => {
-        const query = {
-            $or: [{ postType: "public" }, { postType: "friends" }],
-        }
-        const userPost = await errorHandling(
-            Post.find(query)
+    getFriendsPosts = async (features: any) => {
+        const { userId } = features;
+
+        const user = await errorHandling(
+            User.findById(userId)
                 .populate({
-                    path: "userId",
-                    // select: "firstName lastName profileImage friends",
-                    match: { friends: userId }
-                }).populate("userId", "firstName lastName imageProfile")
-        )
-
+                    path: "friends",
+                    match: { active: { $eq: true } }
+                })
+        );
+        if (!user) throw new APIError(`Not Found User for this id: ${userId}`, 404);
+        const query = {
+            userId: { $in: user.friends },
+            $or: [
+                { postType: "public" },
+                { postType: "friends" }
+            ],
+        }
+        // const userPost = await errorHandling(
+        //     Post.find(query)
+        //         .populate({
+        //             path: "userId",
+        //             select: "firstName lastName profileImage",
+        //         })
+        // );
+        const countPosts = await errorHandling(Post.countDocuments(query));
+        console.log(countPosts);
         
-        // const countDocument = await errorHandling(Post.countDocuments({ userId: features.userId }))
-        // const newPosts: any[] = []
+        const apiFeature = new APIFeature(Post.find(query), features)
+            .pagination(countPosts);
+        const result = await apiFeature.exic("posts")
 
-        // userPost.forEach((post: any) => {
-        //     if (post.userId.friends.includes(features.toString())) {
-        //         newPosts.push(post);
-        //     }
-        // })
-        // console.log(newPosts);
-
-        return userPost
+        return result
     }
 }
