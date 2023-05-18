@@ -1,4 +1,5 @@
 import { check } from "express-validator";
+
 import APIError from "../apiError";
 import { validatorMW } from "../../middlewares/validatorMW";
 import { errorHandling } from "../errorHandling";
@@ -11,36 +12,18 @@ export const sendFriendRequestValidator = [
         .custom(async (val, { req }) => {
             if (val === req.user._id.toString())
                 throw new APIError("You can't send friendRequest for you", 400);
-
-            const isUserExistInFriends = await errorHandling(
-                User.exists({
-                    _id: req.user._id,
-                    friends: val,
-                }).lean()
+            const isUserExist = await errorHandling(
+                User.findOne({ _id: req.user._id })
+                    .select("friends myFriendshipRequests")
             );
-            if (isUserExistInFriends)
-                throw new APIError("this user in your friends", 400);
-
-            const isUserExistInMyFriendsRequests = await errorHandling(
-                User.exists({
-                    _id: req.user._id,
-                    myFriendshipRequests: val,
-                }).lean()
-            );
-            if (isUserExistInMyFriendsRequests)
-                throw new APIError("You have sent a friend request to this person before", 400);
-
-            const isUserExistInFriendsRequests = await errorHandling(
-                User.exists({
-                    _id: req.user._id,
-                    friendshipRequests: val,
-                }).lean()
-            );
-            if (isUserExistInFriendsRequests)
-                throw new APIError("This user in your friendsRequests,now you can accept this", 400);
-
-            console.log(isUserExistInFriends, isUserExistInFriendsRequests, isUserExistInMyFriendsRequests);
-
+            if (isUserExist) {
+                if (isUserExist.friends.includes(val))
+                    throw new APIError("User Exist in your friends", 400);
+                else if (isUserExist.myFriendshipRequests.includes(val))
+                    throw new APIError("You sent friendRequest to this user before", 400);
+            } else {
+                throw new APIError("User Not Found", 404);
+            }
             return true
         }),
     validatorMW
@@ -88,7 +71,31 @@ export const cancelFriendRequestValidator = [
         .custom(async (val, { req }) => {
             if (val === req.user._id.toString()) {
                 throw new APIError("Can't cancel this user", 400)
-            }  
+            }
+            const isUserExistInMyFriendsRequests = await errorHandling(
+                User.exists({ _id: req.user._id, myFriendshipRequests: val }).lean()
+            )
+            const isUserExistInFriendsRequests = await errorHandling(
+                User.exists({ _id: val, friendshipRequests: req.user._id }).lean()
+            )
+
+            if (isUserExistInMyFriendsRequests && isUserExistInFriendsRequests) return true
+            
+            throw new APIError("You can't cancel this friend request!", 404);
         }),
     validatorMW
 ];
+
+export const getUserFriendsValidator = [
+    check("id")
+        .isMongoId()
+        .withMessage("Invalid user id format!!")
+        .custom(async (val) => {
+            const user = await errorHandling(
+                User.exists({ _id: val, active: true })
+            )
+            if (!user) throw new APIError("Can't find this user", 404);
+            return true;
+        }),
+    validatorMW
+]

@@ -49,6 +49,16 @@ class FriendsService {
         return user
     }
 
+    getMyFriendsRequest = async (userId: ObjectId): Promise<any> => {
+        const myFriendsRequest = await errorHandling(
+            User.findById(userId)
+                .select("myFriendshipRequests")
+                .populate("myFriendshipRequests", "name profileImage")
+        );
+        if (!myFriendsRequest) throw new APIError("Not Found User", 404);
+        return myFriendsRequest
+    }
+
     acceptFriendRequest = async (userData: any): Promise<any> => {
         const { userId, friendId } = userData;
         const operations = [

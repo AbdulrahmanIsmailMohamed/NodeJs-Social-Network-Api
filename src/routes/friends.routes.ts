@@ -6,6 +6,7 @@ import {
     acceptFriendRequestValidator,
     cancelFriendRequestValidator,
     deleteFriendValidator,
+    getUserFriendsValidator,
     sendFriendRequestValidator
 } from '../utils/validator/friends.validator';
 
@@ -14,12 +15,21 @@ const friendController = new FriendsController()
 
 router
     .use(protectRoute)
+
     .get("/", friendController.getFriends)
+
     .get("/friendsRequest", friendController.getFriendsRequest)
-    .get("/:id", friendController.getFriends)
+
+    .get("/myFriendsRequest", friendController.getMyFriendsRequest)
+
+    .get("/:id", getUserFriendsValidator,friendController.getFriends)
+
     .patch("/:id", sendFriendRequestValidator, friendController.sendFriendRequest)
+
     .patch("/accept/:id", acceptFriendRequestValidator, friendController.acceptFriendRequest)
+
     .delete("/cancel/:id", cancelFriendRequestValidator, friendController.cancelFriendRequest)
+    
     .delete("/deleteFriend/:id", deleteFriendValidator, friendController.deleteFriendFromFriends)
 
 export default router;

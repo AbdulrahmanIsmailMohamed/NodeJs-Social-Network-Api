@@ -32,6 +32,14 @@ class FriendsController {
         }
     );
 
+    getMyFriendsRequest = asyncHandler(
+        async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+            const myFriendsRequest = await this.friendsService.getMyFriendsRequest(req.user._id);
+            if (!myFriendsRequest) return next(new APIError("Not Found User", 404));
+            res.status(200).json({ status: "Success", myFriendsRequest })
+        }
+    );
+
     acceptFriendRequest = asyncHandler(
         async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
             const userData = {

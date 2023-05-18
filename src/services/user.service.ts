@@ -13,7 +13,7 @@ class UserService {
         this.senitizeData = new SenitizeData()
     }
 
-    updateUser = async (userData: UserInterface, userId: string | ObjectId): Promise<any> => {
+    updateLoggedUser = async (userData: UserInterface, userId: string | ObjectId): Promise<any> => {
         const user = await errorHandling(
             User.findByIdAndUpdate(userId, userData, { new: true })
                 .select("name profileImage address")
@@ -21,7 +21,7 @@ class UserService {
         return user
     }
 
-    inActiveUser = async (userId: ObjectId | string): Promise<string> => {
+    inActiveLoggedUser = async (userId: ObjectId | string): Promise<string> => {
         const user = await errorHandling(
             User.findOneAndUpdate(
                 { _id: userId },

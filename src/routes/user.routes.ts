@@ -16,8 +16,8 @@ router.get("/getMe", userContrller.getUser)
 router
     .route("/")
     .get(allowTo, userContrller.getUsers) //this endpoint allow to admin only
-    .patch(userContrller.updateUser)
-    .delete(userContrller.inactiveUser)
+    .patch(userContrller.updateLoggedUser)
+    .delete(userContrller.inactiveLoggedUser)
 
 router
     .route("/:id")
