@@ -6,7 +6,9 @@ interface UserInterface extends Document {
     number: string,
     email: string,
     password: string,
-    isAdmin: boolean
+    isAdmin: boolean,
+    limitFriends: number,
+    limitFriendshipRequest: number,
     address?: string,
     friends?: Array<object>,
     profileImage?: string,

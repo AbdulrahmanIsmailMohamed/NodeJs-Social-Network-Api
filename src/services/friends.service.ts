@@ -24,8 +24,11 @@ class FriendsService {
             {
                 updateOne: {
                     filter: { _id: userId },
-                    update: { $addToSet: { myFriendshipRequests: friendId } },
-                }
+                    update: {
+                        $addToSet: { myFriendshipRequests: friendId },
+                        $inc: { limitFriendshipRequest: 1 }
+                    }
+                },
             }
         ];
 
@@ -64,19 +67,25 @@ class FriendsService {
         const operations = [
             {
                 updateOne: {
-                    filter: { _id: userId },
+                    filter: {
+                        _id: userId,
+                    },
                     update: {
                         $pull: { friendshipRequests: friendId },
-                        $addToSet: { friends: friendId }
+                        $addToSet: { friends: friendId },
+                        $inc: { limitFriends: 1 }
                     },
                 },
             },
             {
                 updateOne: {
-                    filter: { _id: friendId },
+                    filter: {
+                        _id: friendId,
+                    },
                     update: {
                         $pull: { myFriendshipRequests: userId },
-                        $addToSet: { friends: userId }
+                        $addToSet: { friends: userId },
+                        $inc: { limitFriendshipRequest: -1, limitFriends: 1 },
                     },
                 }
             }
@@ -100,6 +109,7 @@ class FriendsService {
                     filter: { _id: userId },
                     update: {
                         $pull: { myFriendshipRequests: friendId },
+                        $inc: { limitFriendshipRequest: -1 }
                     },
                 },
             },
@@ -128,13 +138,19 @@ class FriendsService {
             {
                 updateOne: {
                     filter: { _id: userId },
-                    update: { $pull: { friends: friendId } }
+                    update: {
+                        $pull: { friends: friendId },
+                        $inc: { limitFriends: -1 }
+                    }
                 }
             },
             {
                 updateOne: {
                     filter: { _id: friendId },
-                    update: { $pull: { friends: userId } }
+                    update: {
+                        $pull: { friends: userId },
+                        $inc: { limitFriends: -1 }
+                    }
                 }
             }
         ];
