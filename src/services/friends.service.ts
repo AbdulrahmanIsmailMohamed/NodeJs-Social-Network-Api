@@ -42,8 +42,8 @@ class FriendsService {
     getFriendsRequest = async (userId: ObjectId): Promise<any> => {
         const user = await errorHandling(
             User.findById(userId)
-                .select("friendsRequest")
-                .populate("friendsRequest", "firstName lastName profileImage")
+                .select("friendshipRequests")
+                .populate("friendshipRequests", "name profileImage")
         );
         if (!user) throw new APIError("Not Found User", 404);
         return user
@@ -141,10 +141,11 @@ class FriendsService {
     getFriends = async (userId: any) => {
         const friends = await errorHandling(
             User.findById(userId)
-                .populate("friends", "firstName lastName profileImage")
+                .select("friends")
+                .populate("friends", "name profileImage")
         );
-        if (!friends) throw new APIError("Can't Find frieds For this id!!", 404);
-        return this.senitizeData.friends(friends);
+        if (!friends) throw new APIError("Can't Find friends For this id!!", 404);
+        return friends;
     }
 }
 

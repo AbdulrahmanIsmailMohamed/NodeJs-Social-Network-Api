@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import { NextFunction } from 'express';
 
 import User from "../models/User";
 import { errorHandling } from "../utils/errorHandling";
@@ -11,10 +10,13 @@ class AuthService {
     constructor() {
         this.senitizeData = new SenitizeData()
     }
-    register =  async (userData: any): Promise<any> => {
+
+    register = async (userData: any): Promise<any> => {
         const user = await errorHandling(User.create(userData));
+        if (!user) throw new APIError("event error when you registerd", 400)
         return this.senitizeData.userRegister(user);
     }
+
     login = async (userData: any): Promise<any> => {
         const user = await errorHandling(User.findOneAndUpdate(
             { email: userData.email },

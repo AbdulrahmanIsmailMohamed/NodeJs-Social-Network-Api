@@ -17,10 +17,10 @@ router
     .route("/")
     .get(allowTo, userContrller.getUsers) //this endpoint allow to admin only
     .patch(userContrller.updateUser)
+    .delete(userContrller.inactiveUser)
 
 router
     .route("/:id")
     .get(userContrller.getUser)
-    .delete(userContrller.inactiveUser)
 
 export default router;

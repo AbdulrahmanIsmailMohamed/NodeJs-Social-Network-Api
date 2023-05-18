@@ -28,26 +28,16 @@ export const updateUser = [
                 return Promise.reject(new APIError("Your email Is exist, please Enter another email", 400));
             return true
         }),
-    check("firstName")
+    check("name")
         .optional()
         .notEmpty()
-        .withMessage("The First name must be not null")
+        .withMessage("The name must be not null")
         .isString()
-        .withMessage("The First name must be String")
+        .withMessage("The name must be String")
         .isLength({ min: 2 })
-        .withMessage("The First name is short")
-        .isLength({ max: 15 })
-        .withMessage("The First name is long"),
-    check("lastName")
-        .optional()
-        .notEmpty()
-        .withMessage("The Last name must be not null")
-        .isString()
-        .withMessage("The Last name must be String")
-        .isLength({ min: 2 })
-        .withMessage("The last name is short")
-        .isLength({ max: 15 })
-        .withMessage("The last name is long"),
+        .withMessage("The name is short")
+        .isLength({ max: 50 })
+        .withMessage("The name is long"),
     check("number")
         .optional()
         .optional()

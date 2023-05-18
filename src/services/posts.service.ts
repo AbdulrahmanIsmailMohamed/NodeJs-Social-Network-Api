@@ -4,8 +4,6 @@ import { errorHandling } from "../utils/errorHandling"
 import SenitizeData from "../utils/senitizeData";
 import { APIFeature } from "../utils/apiFeature";
 import User from '../models/User';
-import { query } from "express";
-import { features } from "process";
 
 export class PostService {
     private senitizeData: SenitizeData;
@@ -14,7 +12,7 @@ export class PostService {
     }
 
     createPost = async (postData: any) => {
-        const post = await errorHandling((Post.create(postData)));
+        const post = await errorHandling(Post.create(postData));
         if (!post) throw new APIError("Can't create post", 400);
         return this.senitizeData.post(post);
     }
@@ -69,7 +67,7 @@ export class PostService {
             ],
         }
         const countPosts = await errorHandling(Post.countDocuments(query));
-        
+
         const apiFeature = new APIFeature(Post.find(query), features)
             .pagination(countPosts);
         const result = await apiFeature.exic("posts")

@@ -60,13 +60,19 @@ export class APIFeature<T extends Document> {
         if (modelName === 'user') {
             const users = await this.mongooseQuery
                 .sort({ createdAt: -1 })
-                .select("firstName lastName profileImage")
+                .select("name profileImage")
+            return { users, paginationResult: this.paginationResult }
+        }
+        if (modelName === 'users') {
+            const users = await this.mongooseQuery
+                .sort({ createdAt: -1 })
+                .select("name email profileImage")
             return { users, paginationResult: this.paginationResult }
         }
         if (modelName === "posts") {
             const posts = await this.mongooseQuery
                 .sort({ createdAt: -1 })
-                .populate("userId", "firstName lastName profileImage");
+                .populate("userId", "name profileImage");
             return { posts, paginationResult: this.paginationResult }
         }
         const posts = await this.mongooseQuery

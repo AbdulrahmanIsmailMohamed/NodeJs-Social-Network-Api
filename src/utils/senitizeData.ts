@@ -5,8 +5,7 @@ class SenitizeData {
     userLogin = (user: UserInterface) => (
         {
             _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
+            name: user.name,
             email: user.email,
         }
     );
@@ -14,8 +13,7 @@ class SenitizeData {
     user = (user: UserInterface) => (
         {
             _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
+            name: user.name,
             profileImage: user.profileImage,
             friends: user.friends,
             address: user.address
@@ -25,19 +23,13 @@ class SenitizeData {
     userRegister = (user: UserInterface) => (
         {
             _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
+            name: user.name,
             email: user.email,
             number: user.number,
             address: user.address,
         }
     );
-    friends = (user: UserInterface) => (
-        {
-            _id: user._id,
-            friends: user.friends
-        }
-    );
+    
     post = (post: PostInterface) => (
         {
             _id: post._id,

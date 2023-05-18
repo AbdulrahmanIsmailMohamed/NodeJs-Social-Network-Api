@@ -5,6 +5,7 @@ import User from "../models/User";
 import { errorHandling } from "../utils/errorHandling";
 import { APIFeature } from '../utils/apiFeature';
 import SenitizeData from '../utils/senitizeData';
+import APIError from '../utils/apiError';
 
 class UserService {
     private senitizeData: SenitizeData;
@@ -15,18 +16,19 @@ class UserService {
     updateUser = async (userData: UserInterface, userId: string | ObjectId): Promise<any> => {
         const user = await errorHandling(
             User.findByIdAndUpdate(userId, userData, { new: true })
-                .select("firstName lastName profileImage address")
+                .select("name profileImage address")
         )
         return user
     }
 
-    inActiveUser = async (userId: string): Promise<any> => {
-        const user = await errorHandling(User.findByIdAndUpdate(
-            userId,
-            { active: false },
-            { new: true }
-        ));
-        return user
+    inActiveUser = async (userId: ObjectId | string): Promise<string> => {
+        const user = await errorHandling(
+            User.findOneAndUpdate(
+                { _id: userId },
+                { active: false }
+            ));
+        if (!user) throw new APIError("Can't inactive this user", 400);
+        return "Your profile is inactive"
     }
 
     /** @access admin */
@@ -35,15 +37,17 @@ class UserService {
         const apiFeature = new APIFeature(User.find({ active: true }), features)
             .search()
             .pagination(countDocument);
-        const data = await errorHandling(apiFeature.exic());
+        const data = await errorHandling(apiFeature.exic("users"));
+        if (!data) throw new APIError("can't find users", 404)
         return data
     }
 
     getUser = async (userId: ObjectId | string): Promise<any> => {
         const user = await errorHandling(
             User.findOne({ _id: userId, active: true })
-                .select("firstName lastName profileImage address")
+                .select("name profileImage address")
         );
+        if (!user) throw new APIError("can't find this user", 404);
         return user;
     }
 }

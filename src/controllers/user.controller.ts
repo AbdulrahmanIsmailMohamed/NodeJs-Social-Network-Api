@@ -18,6 +18,7 @@ class UserController {
         res.status(200).json({ status: "Success", user });
     });
 
+    /**@access admin */
     getUsers = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const features = {
             keyword: req.query.keyword,
@@ -45,10 +46,10 @@ class UserController {
         res.status(200).json({ status: "Success", user });
     });
 
-    inactiveUser = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const user = await this.userService.inActiveUser(req.params.id);
+    inactiveUser = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+        const user = await this.userService.inActiveUser(req.user._id);
         if (!user) return next(new APIError("The user Not found!", 404));
-        res.status(200).json({ status: "Success" });
+        res.status(200).json({ status: "Success", message: user });
     });
 }
 

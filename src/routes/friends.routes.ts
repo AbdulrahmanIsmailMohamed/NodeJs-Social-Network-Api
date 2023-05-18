@@ -1,6 +1,5 @@
 import { Router } from "express";
 
-import { userIdValidator } from "../utils/validator/user.validator";
 import { protectRoute } from "../config/auth";
 import FriendsController from "../controllers/friends.controller";
 import {

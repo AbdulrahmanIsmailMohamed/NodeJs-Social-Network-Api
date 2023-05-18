@@ -1,6 +1,7 @@
+import { NextFunction, Request, Response } from "express";
+
 import { asyncHandler } from "../middlewares/asyncHandlerMW";
 import AuthService from "../services/auth.service";
-import { NextFunction, Request, Response } from "express";
 import APIError from "../utils/apiError";
 import { createToken } from "../utils/createToken";
 
@@ -11,10 +12,11 @@ class AuthController {
     }
     register = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const user = await this.authService.register(req.body);
-        if (!user) return next(new APIError("The User Can't Be Created!", 400));
+        if (!user) return next(new APIError("The User Can't Be Registerd!", 400));
         const token = createToken(user)
         res.status(201).json({ status: "Success", user , token});
     });
+
     login = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const userData = {
             email: req.body.email,

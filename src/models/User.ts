@@ -5,11 +5,7 @@ import UserInterface from "interfaces/user.Interface";
 
 const userSchema = new Schema<UserInterface>(
     {
-        firstName: {
-            type: String,
-            required: true
-        },
-        lastName: {
+        name: {
             type: String,
             required: true
         },

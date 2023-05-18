@@ -10,7 +10,15 @@ export const loginValidator = [
         .notEmpty()
         .withMessage("The email must be not null")
         .isEmail()
-        .withMessage("This email not valid"),
+        .withMessage("This email not valid")
+        .custom(async (val) => {
+            const user = await errorHandling(
+                User.exists({ email: val }).lean()
+            );
+            if (!user)
+                return Promise.reject(new APIError("Your email not exist, please register", 400));
+            return true
+        }),
     check("password")
         .notEmpty()
         .withMessage("The password must be not null"),
@@ -24,29 +32,22 @@ export const registerValidor = [
         .isEmail()
         .withMessage("This email not valid")
         .custom(async (val, { req }) => {
-            const user = await errorHandling(User.findOne({ email: val }));
+            const user = await errorHandling(
+                User.exists({ email: val }).lean()
+            );
             if (user)
                 return Promise.reject(new APIError("Your email is exist, please login", 400));
             return true
         }),
-    check("firstName")
+    check("name")
         .notEmpty()
-        .withMessage("The First name must be not null")
+        .withMessage("The name must be not null")
         .isString()
-        .withMessage("The First name must be String")
+        .withMessage("The name must be String")
         .isLength({ min: 2 })
-        .withMessage("The First name is short")
-        .isLength({ max: 15 })
-        .withMessage("The First name is long"),
-    check("lastName")
-        .notEmpty()
-        .withMessage("The Last name must be not null")
-        .isString()
-        .withMessage("The Last name must be String")
-        .isLength({ min: 2 })
-        .withMessage("The last name is short")
-        .isLength({ max: 15 })
-        .withMessage("The last name is long"),
+        .withMessage("The name is short")
+        .isLength({ max: 50 })
+        .withMessage("The name is long"),
     check("number")
         .optional()
         .notEmpty()

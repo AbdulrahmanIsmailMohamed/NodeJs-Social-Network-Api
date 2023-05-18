@@ -88,7 +88,7 @@ export const cancelFriendRequestValidator = [
         .custom(async (val, { req }) => {
             if (val === req.user._id.toString()) {
                 throw new APIError("Can't cancel this user", 400)
-            }
+            }  
         }),
     validatorMW
 ];
