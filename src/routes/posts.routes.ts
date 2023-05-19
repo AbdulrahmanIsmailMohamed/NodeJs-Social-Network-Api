@@ -3,9 +3,9 @@ import { Router } from "express";
 import { PostController } from '../controllers/posts.controller';
 import { protectRoute } from "../config/auth";
 import {
-    createPostValidor,
-    postIdValidator,
-    updatePostValidor
+    createPostValidator,
+    deletePostValidator,
+    updatePostValidator
 } from "../utils/validator/posts.validator";
 
 const router: Router = Router({ mergeParams: true });
@@ -13,16 +13,18 @@ const postController = new PostController()
 
 router.use(protectRoute)
 
-router.get("/me", postController.getUserPost)
+router.get("/me", postController.getLoggedUserPosts)
 
 router
     .route("/")
-    .post(createPostValidor, postController.createPost)
+    .post(createPostValidator, postController.createPost)
     .get(postController.getFrinedsPosts)
+
+router.get("/friend", postController.getUserPosts)
 
 router
     .route("/:id")
-    .patch(updatePostValidor, postController.updatePost)
-    .delete(postIdValidator, postController.deletePost)
+    .patch(updatePostValidator, postController.updatePost)
+    .delete(deletePostValidator, postController.deletePost)
 
 export default router;

@@ -39,28 +39,47 @@ export class PostController {
         res.status(204).json({ status: "Success", message: post });
     });
 
-    getUserPost = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        const features = {
-            limit: req.query.limit || 5,
-            page: parseInt(req.query.page as string) * 1 || 1,
-            userId: req.params.userId ? req.params.userId : req.user._id
-        };
-        console.log(features);
-        
-        const result = await this.postService.getUserPost(features);
-        if (!result) return next(new APIError("Can't find posts", 404));
-        const { paginationResult, posts } = result;
-        res.status(200)
-            .json({
-                status: "Success",
-                paginationResult,
-                posts
-            });
-    });
+    getLoggedUserPosts = asyncHandler(
+        async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+            const features = {
+                limit: parseInt(req.query.limit as string) * 1 || 5,
+                page: parseInt(req.query.page as string) * 1 || 1,
+                userId: req.user._id
+            };
+            const result = await this.postService.getLoggedUserPosts(features);
+            if (!result) return next(new APIError("Can't find posts", 404));
+            const { paginationResult, posts } = result;
+            res.status(200)
+                .json({
+                    status: "Success",
+                    paginationResult,
+                    posts
+                });
+        }
+    );
+    getUserPosts = asyncHandler(
+        async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+            const features = {
+                limit: parseInt(req.query.limit as string) * 1 || 5,
+                page: parseInt(req.query.page as string) * 1 || 1,
+                userId: req.user._id,
+                friendId: req.params.userId
+            };
+            const result = await this.postService.getUserPosts(features);
+            if (!result) return next(new APIError("Can't find posts", 404));
+            const { paginationResult, posts } = result;
+            res.status(200)
+                .json({
+                    status: "Success",
+                    paginationResult,
+                    posts
+                });
+        }
+    );
 
     getFrinedsPosts = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         const features = {
-            limit: req.query.limit || 5,
+            limit: parseInt(req.query.limit as string) * 1 || 5,
             page: parseInt(req.query.page as string) * 1 || 1,
             userId: req.user._id
         };

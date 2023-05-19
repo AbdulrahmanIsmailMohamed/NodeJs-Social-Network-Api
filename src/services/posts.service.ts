@@ -4,6 +4,7 @@ import { errorHandling } from "../utils/errorHandling"
 import SenitizeData from "../utils/senitizeData";
 import { APIFeature } from "../utils/apiFeature";
 import User from '../models/User';
+import { PostInterface } from '../interfaces/post.interface';
 
 export class PostService {
     private senitizeData: SenitizeData;
@@ -11,20 +12,23 @@ export class PostService {
         this.senitizeData = new SenitizeData()
     }
 
-    createPost = async (postData: any) => {
+    createPost = async (postData: any): Promise<any> => {
         const post = await errorHandling(Post.create(postData));
         if (!post) throw new APIError("Can't create post", 400);
         return this.senitizeData.post(post);
     }
 
-    updatePost = async (data: any) => {
+    updatePost = async (data: any): Promise<any> => {
         const post = await errorHandling(
             Post.findOneAndUpdate(
                 {
                     _id: data.postId,
                     userId: data.userId
                 },
-                data.body,
+                {
+                    post: data.body.post,
+                    postType: data.body.postType
+                },
                 { new: true }
             )
         );
@@ -32,7 +36,7 @@ export class PostService {
         return this.senitizeData.post(post)
     }
 
-    deletePost = async (data: any) => {
+    deletePost = async (data: any): Promise<string> => {
         const post = await errorHandling(
             Post.findOneAndDelete({ _id: data.postId, userId: data.userId })
         );
@@ -40,12 +44,33 @@ export class PostService {
         return "Done"
     }
 
-    getUserPost = async (features: any) => {
-        const countDocument = await errorHandling(Post.countDocuments({ userId: features.userId }))
-        const apiFeature = new APIFeature(Post.find({ userId: features.userId }), features)
+    getLoggedUserPosts = async (features: any) => {
+        const { userId } = features;
+        const countDocument = await errorHandling(
+            Post.countDocuments({ userId })
+        );
+        const apiFeature = new APIFeature(Post.find({ userId }), features)
             .pagination(countDocument);
-        const data = await apiFeature.exic("posts");
-        return data;
+        const result = await errorHandling(apiFeature.exic("posts"));
+        return result;
+    }
+
+    getUserPosts = async (features: any) => {
+        const { userId, friendId } = features;
+        const isUserFriend = await errorHandling(
+            User.exists({ _id: userId, friends: friendId })
+                .lean()
+        )
+        const query: any = {
+            userId: friendId,
+            postType: isUserFriend ? { $in: ["public", "friends"] } : "public"
+        };
+
+        const countDocument = await errorHandling(Post.countDocuments(query));
+        const apiFeature = new APIFeature(Post.find(query), features)
+            .pagination(countDocument);
+        const result = await errorHandling(apiFeature.exic("posts"));
+        return result;
     }
 
     getFriendsPosts = async (features: any) => {
