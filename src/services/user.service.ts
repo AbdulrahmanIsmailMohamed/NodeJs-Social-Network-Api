@@ -14,10 +14,15 @@ class UserService {
     }
 
     updateLoggedUser = async (userData: UserInterface, userId: string | ObjectId): Promise<any> => {
+        const { name, address, number } = userData
         const user = await errorHandling(
-            User.findByIdAndUpdate(userId, userData, { new: true })
-                .select("name profileImage address")
-        )
+            User.findOneAndUpdate(
+                { _id: userId, active: true },
+                { name, address, number },
+                { new: true }
+            ).select("name profileImage address")
+        );
+        if (!user) throw new APIError("Can't update your data", 400);
         return user
     }
 

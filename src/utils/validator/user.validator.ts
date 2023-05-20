@@ -5,29 +5,35 @@ import User from "../../models/User";
 import APIError from "../apiError";
 import { errorHandling } from "../errorHandling";
 
-export const userIdValidator = [
+export const getUserValidator = [
     check("id")
         .isMongoId()
-        .withMessage("Invalid User Id"),
-    validatorMW
-]
-
-export const updateUser = [
-    check("id")
-        .isMongoId()
-        .withMessage("Invalid userid format"),
-    check("email")
-        .optional()
-        .notEmpty()
-        .withMessage("The email must be not null")
-        .isEmail()
-        .withMessage("This email not valid")
-        .custom(async (val, { req }) => {
-            const user = await errorHandling(User.findOne({ email: val }));
-            if (user)
-                return Promise.reject(new APIError("Your email Is exist, please Enter another email", 400));
-            return true
+        .withMessage("Invalid User Id")
+        .custom(async (val) => {
+            const isUserExist = await errorHandling(
+                User.exists({ _id: val, active: true }).lean()
+            );
+            if (isUserExist) return true;
+            throw new APIError("this user not exist!!", 404);
         }),
+    validatorMW
+];
+
+export const getUserPostsValidator = [
+    check("userId")
+        .isMongoId()
+        .withMessage("Invalid User Id")
+        .custom(async (val) => {
+            const isUserExist = await errorHandling(
+                User.exists({ _id: val, active: true }).lean()
+            );
+            if (isUserExist) return true;
+            throw new APIError("this user not exist!!", 404);
+        }),
+    validatorMW
+];
+
+export const updateUserValidator = [
     check("name")
         .optional()
         .notEmpty()

@@ -68,17 +68,3 @@ export const deletePostValidator = [
         }),
     validatorMW
 ];
-
-// export const getUserPostsValidator = [
-//     check("id")
-//         .isMongoId()
-//         .withMessage("Invalid Post Id format!")
-//         .custom(async (val, { req }) => {
-//             const isUserFriend = await errorHandling(
-//                 Post.exists({ _id: val, userId: req.user._id }).lean()
-//             );
-//             if (isPostExist) return true;
-//             throw new APIError("Your post not exist", 404);
-//         }),
-//     validatorMW
-// ]
