@@ -40,7 +40,22 @@ export class CommentService {
         const comment = await errorHandling(
             Comment.findOneAndDelete({ _id: commentId, userId }).lean()
         );
-        if (!comment) throw new APIError("Can't delete comment", 400);
+
+        /*
+            if the user is not the owner comment,
+            check if the user is the owner of the post containing the comment
+        */
+        if (!comment) {
+            const isOwnerPost = await errorHandling(
+                Comment.findOneAndDelete({ _id: commentId })
+                    .select("postId")
+                    .populate({
+                        path: "postId",
+                        match: { userId }
+                    })
+            )
+            if (!isOwnerPost) throw new APIError("Can't delete comment", 400);
+        }
         return "Done";
     }
 

@@ -73,6 +73,20 @@ export const deleteCommentValidator = [
                 Comment.exists({ _id: val, userId: req.user._id }).lean()
             );
             if (isCommentExist) return true;
+            /*
+                if the user is not the owner comment,
+                check if the user is the owner of the post containing the comment
+            */
+            const isOwnerPost = await errorHandling(
+                Comment.findOne({ _id: val })
+                    .select("postId")
+                    .populate({
+                        path: "postId",
+                        match: { userId: req.user._id }
+                    })
+            )
+            console.log(isOwnerPost.postId);
+            if (isOwnerPost.postId) return true;
             throw new APIError("comment not found", 404);
         }),
     validatorMW
@@ -82,11 +96,22 @@ export const getCommentValidator = [
     check("id")
         .isMongoId()
         .withMessage("Invalid Comment id format!!")
-        .custom(async (val) => {
+        .custom(async (val, { req }) => {
             const isCommentExist = await errorHandling(
-                Comment.exists({ _id: val }).lean()
+                Comment.findOne({ _id: val })
+                    .select("postId")
+                    .populate({
+                        path: "postId",
+                        match: { $or: [{ postType: "public" }, { postType: "friends" }] }
+                    })
             );
-            if (isCommentExist) return true;
+            // if post type equal public => ok,else if it friends check if user exist in owner of the post friends 
+            if (isCommentExist.postId) {
+                if (isCommentExist.postId.postType === "public") return true;
+                if (isCommentExist.postId.postType === "friends") {
+                    if (req.user.friends.includes(isCommentExist.postId.userId)) return true
+                }
+            }
             throw new APIError("comment not found", 404);
         }),
     validatorMW
