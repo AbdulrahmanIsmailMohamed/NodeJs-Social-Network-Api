@@ -4,10 +4,11 @@ import APIError from '../utils/apiError';
 
 export class ReplyService {
     createReply = async (data: any): Promise<any> => {
+        const { commentId, replyBody } = data;
         const reply = await errorHandling(
             Comment.findByIdAndUpdate(
-                data.commentId,
-                { $addToSet: { reply: data.replyBody } },
+                commentId,
+                { $addToSet: { reply: replyBody } },
                 { new: true }
             )
         );

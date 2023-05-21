@@ -121,11 +121,22 @@ export const getPostCommentsValidator = [
     check("postId")
         .isMongoId()
         .withMessage("Invalid Comment id format!!")
-        .custom(async (val) => {
+        .custom(async (val, { req }) => {
             const isPostExist = await errorHandling(
-                Post.exists({ _id: val }).lean()
+                Post.findOne({
+                    _id: val,
+                    $or: [
+                        { postType: "public" },
+                        { postType: "friends" }
+                    ]
+                }).select("userId postType")
             );
-            if (isPostExist) return true;
+            if (isPostExist) {
+                if (isPostExist.postType === "public") return true;
+                else if (isPostExist.postType === "friends") {
+                    if (req.user.friends.includes(isPostExist.userId)) return true;
+                }
+            }
             throw new APIError("Post not found", 404);
         }),
     validatorMW
