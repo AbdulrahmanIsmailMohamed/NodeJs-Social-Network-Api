@@ -1,3 +1,4 @@
+import { CommentsInterface } from "../interfaces/comments.interface";
 import { PostInterface } from "../interfaces/post.interface";
 import UserInterface from "../interfaces/user.Interface";
 
@@ -29,7 +30,7 @@ class SenitizeData {
             address: user.address,
         }
     );
-    
+
     post = (post: PostInterface) => (
         {
             _id: post._id,
@@ -39,6 +40,18 @@ class SenitizeData {
             image: post.image,
             likes: post.likes,
             share: post.share
+        }
+    );
+
+    comments = (comment: CommentsInterface) => (
+        {
+            _id: comment._id,
+            userId: comment.userId,
+            postId: comment.postId,
+            comment: comment.comment,
+            image: comment.image,
+            likes: comment.likes,
+            reply: comment.reply
         }
     )
 }

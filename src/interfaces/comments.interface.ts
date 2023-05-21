@@ -4,10 +4,14 @@ export interface CommentsInterface extends Document {
     userId: ObjectId,
     postId: ObjectId,
     comment: string,
+    likes?: number,
     image?: string,
-    reply?: {
-        userId: ObjectId,
-        comment: string,
-        image?: string,
-    }
+    reply?: ReplyInterface[]
+}
+
+interface ReplyInterface {
+    userId: ObjectId,
+    comment: string,
+    likes?: number
+    image?: string,
 }

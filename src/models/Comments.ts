@@ -16,8 +16,13 @@ const commentSchema = new Schema<CommentsInterface>(
         },
         comment: {
             type: String,
+            minlength: 1,
             maxlength: 1000,
             required: true
+        },
+        likes: {
+            type: Number,
+            default: 0
         },
         image: {
             type: String,
@@ -31,8 +36,13 @@ const commentSchema = new Schema<CommentsInterface>(
             },
             comment: {
                 type: String,
+                minlength: 1,
                 maxlength: 1000,
                 required: true
+            },
+            likes: {
+                type: Number,
+                default: 0
             },
             image: {
                 type: String,

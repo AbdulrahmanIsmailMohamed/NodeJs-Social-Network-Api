@@ -17,7 +17,6 @@ export class CommentController {
             userId: req.user._id,
             ...req.body
         }
-        console.log(commentBody);
         const comment = await this.commentService.createComment(commentBody);
         if (!comment) return next(new APIError("Can't create comment", 400));
         res.status(201).json({ status: "Success", comment });
@@ -27,11 +26,10 @@ export class CommentController {
         const data = {
             commentId: req.params.id,
             userId: req.user._id,
-            postId: req.body.postId,
             commentBody: { ...req.body }
         }
         const comment = await this.commentService.updateComment(data);
-        if (!comment) return next(new APIError("can't update comment", 400));
+        if (!comment) return next(new APIError("can't find this comment", 404));
         res.status(200).json({ status: "Success", comment });
     });
 
@@ -52,11 +50,9 @@ export class CommentController {
     });
 
     getComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const data = {
-            commentId: req.params.id,
-            postId: req.body.postId
-        }
-        const comment = await this.commentService.getComment(data);
+        const commentId = req.params.id
+
+        const comment = await this.commentService.getComment(commentId);
         if (!comment) return next(new APIError("can't find comment", 404));
         res.status(200).json({ status: "Success", comment });
     });
