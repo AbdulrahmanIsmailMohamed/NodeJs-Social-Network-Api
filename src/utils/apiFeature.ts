@@ -14,7 +14,6 @@ export class APIFeature<T extends Document> {
         this.paginationResult = {
             limit: 0,
             currentPage: 0,
-            numberOfPages: 0,
             countDocument: 0
         }
     }
@@ -36,7 +35,6 @@ export class APIFeature<T extends Document> {
         const skip = (this.queryString.page - 1) * this.queryString.limit;
         const endIndex: number = this.queryString.page * this.queryString.limit;
         this.paginationResult = {
-            numberOfPages: Math.floor(this.queryString.limit / countDocument),
             countDocument,
             currentPage: this.queryString.page,
             limit: this.queryString.limit
@@ -48,15 +46,7 @@ export class APIFeature<T extends Document> {
         return this
     }
 
-    async exic(modelName: string = "user"): Promise<{
-        users: T[];
-        paginationResult: Paginate;
-        posts?: undefined;
-    } | {
-        posts: T[];
-        paginationResult: Paginate;
-        users?: undefined;
-    }> {
+    async exic(modelName: string = "user") {
         if (modelName === 'user') {
             const users = await this.mongooseQuery
                 .sort({ createdAt: -1 })

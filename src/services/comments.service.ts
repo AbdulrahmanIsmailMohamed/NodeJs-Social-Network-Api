@@ -2,6 +2,8 @@ import APIError from "../utils/apiError";
 import { Comment } from "../models/Comments"
 import { errorHandling } from "../utils/errorHandling"
 import SenitizeData from '../utils/senitizeData';
+import { APIFeature } from "../utils/apiFeature";
+import { features } from "process";
 
 export class CommentService {
     private senitizeData: SenitizeData;
@@ -42,9 +44,14 @@ export class CommentService {
         return "Done";
     }
 
-    getComments = async (postId: any): Promise<any> => {
-        const comments = await errorHandling(Comment.find({ postId }));
-        if (!comments) throw new APIError("can't find comments", 404);
+    getPostComments = async (features: any): Promise<any> => {
+        const { postId } = features;
+        const countDocuments = await errorHandling(Comment.countDocuments({ postId }));
+        if (!countDocuments) throw new APIError("can't find comments", 404);
+
+        const apiFeatures = new APIFeature(Comment.find({ postId }), features).pagination(countDocuments);
+        const comments = apiFeatures.exic("posts")
+        if (!comments) throw new APIError("Can't find comments", 404)
         return comments
     }
 
@@ -53,8 +60,6 @@ export class CommentService {
             Comment.findById(commentId).populate("userId", "name profileImage")
         );
         if (!comment) throw new APIError("can't find comment", 404);
-        console.log("gi");
-        
         return comment
     }
 }

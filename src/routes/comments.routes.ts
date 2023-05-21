@@ -6,6 +6,7 @@ import {
     createCommentValidator,
     deleteCommentValidator,
     getCommentValidator,
+    getPostCommentsValidator,
     updateCommentValidator
 } from '../utils/validator/comments.validator';
 
@@ -14,10 +15,11 @@ const commentController = new CommentController();
 
 router.use(protectRoute);
 
+router.get("/get/:postId", getPostCommentsValidator, commentController.getPostComments)
+
 router
     .route("/:postId")
     .post(createCommentValidator, commentController.createComment)
-    // .get(commentController.getComments)
 
 router
     .route("/:id")

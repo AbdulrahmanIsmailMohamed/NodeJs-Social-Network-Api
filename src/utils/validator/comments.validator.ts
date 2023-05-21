@@ -86,10 +86,22 @@ export const getCommentValidator = [
             const isCommentExist = await errorHandling(
                 Comment.exists({ _id: val }).lean()
             );
-            // console.log(isCommentExist);
-            
             if (isCommentExist) return true;
             throw new APIError("comment not found", 404);
+        }),
+    validatorMW
+];
+
+export const getPostCommentsValidator = [
+    check("postId")
+        .isMongoId()
+        .withMessage("Invalid Comment id format!!")
+        .custom(async (val) => {
+            const isPostExist = await errorHandling(
+                Post.exists({ _id: val }).lean()
+            );
+            if (isPostExist) return true;
+            throw new APIError("Post not found", 404);
         }),
     validatorMW
 ];

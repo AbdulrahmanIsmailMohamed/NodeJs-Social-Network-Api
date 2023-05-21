@@ -53,4 +53,8 @@ const commentSchema = new Schema<CommentsInterface>(
     { timestamps: true }
 );
 
+commentSchema.pre(/^find/, function () {
+    this.select("-__v")
+});
+
 export const Comment = model("Comment", commentSchema);

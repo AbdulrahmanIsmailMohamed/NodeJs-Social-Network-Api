@@ -43,10 +43,22 @@ export class CommentController {
         res.status(204).json({ status: "Success", message: comment })
     });
 
-    getComments = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const comments = await this.commentService.getComments(req.params.postId);
+    getPostComments = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const features = {
+            limit: parseInt(req.query.limit as string) * 1 || 5,
+            page: parseInt(req.query.page as string) * 1 || 1,
+            postId: req.params.postId
+        };
+
+        const comments = await this.commentService.getPostComments(features);
         if (!comments) return next(new APIError("can't find comments", 404));
-        res.status(200).json({ status: "Success", comments });
+        const { paginationResult, posts } = comments;
+        res.status(200)
+            .json({
+                status: "Success",
+                paginationResult,
+                posts
+            })
     });
 
     getComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
