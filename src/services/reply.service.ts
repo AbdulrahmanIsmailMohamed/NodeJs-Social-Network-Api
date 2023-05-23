@@ -10,7 +10,7 @@ export class ReplyService {
                 commentId,
                 { $addToSet: { reply: replyBody } },
                 { new: true }
-            )
+            ).select("reply")
         );
         if (!reply) throw new APIError("Can't create reply", 400);
         return reply
@@ -22,17 +22,18 @@ export class ReplyService {
         return replys
     }
 
-    deleteReplys = async (data: any): Promise<any> => {
+    deleteReply = async (data: any): Promise<any> => {
+        const { commentId, replyId } = data;
         const reply = await errorHandling(
-            Comment.findByIdAndUpdate(
-                data.commentId,
+            Comment.findOneAndUpdate(
+                { _id: commentId },
                 {
-                    $pull: { reply: { _id: data.replyId } }
+                    $pull: { reply: { _id: replyId } }
                 },
                 { new: true }
-            )
+            ).select("reply")
         );
-        if (!reply) throw new APIError("Can't delete reply", 400);
+        if (!reply) throw new APIError("Not Found reply for this comment", 404);
         return reply
     }
 }

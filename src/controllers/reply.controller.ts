@@ -32,10 +32,10 @@ export class ReplyController {
 
     deleteReply = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const data = {
-            commenId: req.body.commentId,
-            replyId: req.params.id
+            commentId: req.params.commentId,
+            replyId: req.params.replyId
         }
-        const replys = await this.replyService.deleteReplys(data);
+        const replys = await this.replyService.deleteReply(data);
         if (!replys) return next(new APIError("Can't delete Reply", 400));
         res.status(200).json({ status: "Success", replys })
     });
