@@ -11,7 +11,7 @@ import { mounter } from "./routes";
 import { morganStream } from "./logger";
 import APIError from "./utils/apiError";
 
-const app: Application = express();
+export const app: Application = express();
 const PORT = process.env.PORT || 3000;
 const API = process.env.API;
 

@@ -1,14 +1,14 @@
 import { Document, ObjectId } from "mongoose";
 
 interface UserInterface extends Document {
-    _id: ObjectId
+    _id: string
     name: string,
     number: string,
     email: string,
     password: string,
-    isAdmin: boolean,
-    limitFriends: number,
-    limitFriendshipRequest: number,
+    isAdmin?: boolean,
+    limitFriends?: number,
+    limitFriendshipRequest?: number,
     address?: string,
     friends?: Array<object>,
     profileImage?: string,

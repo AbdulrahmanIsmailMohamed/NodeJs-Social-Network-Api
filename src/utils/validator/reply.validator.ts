@@ -1,4 +1,5 @@
 import { check } from "express-validator";
+
 import { errorHandling } from '../errorHandling';
 import { Comment } from '../../models/Comments';
 import { validatorMW } from '../../middlewares/validatorMW';
@@ -107,6 +108,6 @@ export const deleteReplyValidator = [
             )
             if (isReplyExist) return true;
             throw new APIError("Can't find reply for this comment", 404)
-        })
-    , validatorMW
+        }),
+    validatorMW
 ];
