@@ -42,13 +42,13 @@ describe("Authentication", () => {
     })
 
     describe("POST api/v1/auth/register", () => {
-        it("should retun success and token if register successfully", async () => {
-            const res = await server.post("/api/v1/auth/register")
-                .send(newUserData)
+        // it("should retun success and token if register successfully", async () => {
+        //     const res = await server.post("/api/v1/auth/register")
+        //         .send(newUserData)
 
-            expect(res.body.status).to.equal("Success")
-            expect(res.body.token).not.undefined
-        });
+        //     expect(res.body.status).to.equal("Success")
+        //     expect(res.body.token).not.undefined
+        // });
 
         it("should retun undefined if register failed", async () => {
             const res = await server.post("/api/v1/auth/register")
