@@ -42,7 +42,7 @@ class FriendsService {
         return "Friendship request sent";
     }
 
-    getFriendsRequest = async (userId: ObjectId): Promise<any> => {
+    getFriendsRequest = async (userId: string): Promise<any> => {
         const user = await errorHandling(
             User.findById(userId)
                 .select("friendshipRequests")
@@ -52,7 +52,7 @@ class FriendsService {
         return user
     }
 
-    getMyFriendsRequest = async (userId: ObjectId): Promise<any> => {
+    getMyFriendsRequest = async (userId: string): Promise<any> => {
         const myFriendsRequest = await errorHandling(
             User.findById(userId)
                 .select("myFriendshipRequests")
