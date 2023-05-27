@@ -1,7 +1,7 @@
 import request from "supertest";
+import { expect } from "chai";
 
 import { app } from "../index";
-import { expect } from "chai";
 
 const userData = {
     email: "fortest@gmail.com",
@@ -13,13 +13,13 @@ const updateLoggedUser = {
     number: "01553890802"
 }
 
-const server = request(app)
+const server = request(app);
 describe("User Testing", () => {
     let token: string | undefined;
     before(async () => {
         const res = await server.post("/api/v1/auth/login").send(userData)
         token = res.body.token;
-    })
+    });
 
     describe("PATCH api/v1/users", () => {
         it("should update logged user", async () => {
