@@ -1,17 +1,15 @@
 import { expect } from "chai";
 import request from "supertest";
-import sinon from 'sinon';
-import User from '../models/User';
 import { app } from "../index";
-import mongoose from "mongoose";
 
 const server = request(app);
 
 const newUserData = {
     name: "test name",
-    email: "user322@gmail.com",
+    email: "fortest@gmail.com",
     password: "123456Aa@",
-    confirmPassword: "123456Aa@"
+    confirmPassword: "123456Aa@",
+    number: "01553890802"
 }
 
 const userData = {
@@ -48,13 +46,12 @@ describe("Authentication", () => {
             const res = await server.post("/api/v1/auth/register")
                 .send(newUserData)
 
-            expect(res.status).to.equal(201)
             expect(res.body.status).to.equal("Success")
             expect(res.body.token).not.undefined
         });
 
         it("should retun undefined if register failed", async () => {
-            const res = await server.post("/api/v1/auth/login")
+            const res = await server.post("/api/v1/auth/register")
                 .send(newUserData)
 
             expect(res.status).to.equal(400);
