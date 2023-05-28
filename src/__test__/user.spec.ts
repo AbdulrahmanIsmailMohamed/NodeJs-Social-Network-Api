@@ -93,6 +93,4 @@ describe("User Testing", () => {
             expect(res.body.message).to.be.equal('Please login to access this route')
         });
     });
-
-
 })

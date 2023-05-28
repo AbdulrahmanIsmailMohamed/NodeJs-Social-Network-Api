@@ -1,12 +1,15 @@
 import { expect } from "chai";
 import request from "supertest";
+
 import { app } from "../index";
+import { errorHandling } from '../utils/errorHandling';
+import User from '../models/User';
 
 const server = request(app);
 
 const newUserData = {
     name: "test name",
-    email: "fortest@gmail.com",
+    email: "testgmail@gmail.com",
     password: "123456Aa@",
     confirmPassword: "123456Aa@",
     number: "01553890802"
@@ -23,6 +26,10 @@ const fakeUserData = {
 }
 
 describe("Authentication", () => {
+    after(async () => {
+        await errorHandling(User.findOneAndDelete({ email: "testgmail@gmail.com" }));
+    });
+
     describe("POST api/v1/auth/login", () => {
         it("should retun success and token if login successfully", async () => {
             const res = await server.post("/api/v1/auth/login")
@@ -39,16 +46,16 @@ describe("Authentication", () => {
 
             expect(res.status).to.equal(400);
         });
-    })
+    });
 
     describe("POST api/v1/auth/register", () => {
-        // it("should retun success and token if register successfully", async () => {
-        //     const res = await server.post("/api/v1/auth/register")
-        //         .send(newUserData)
+        it("should retun success and token if register successfully", async () => {
+            const res = await server.post("/api/v1/auth/register")
+                .send(newUserData)
 
-        //     expect(res.body.status).to.equal("Success")
-        //     expect(res.body.token).not.undefined
-        // });
+            expect(res.body.status).to.equal("Success")
+            expect(res.body.token).not.undefined
+        });
 
         it("should retun undefined if register failed", async () => {
             const res = await server.post("/api/v1/auth/register")
@@ -56,5 +63,5 @@ describe("Authentication", () => {
 
             expect(res.status).to.equal(400);
         });
-    })
+    });
 })

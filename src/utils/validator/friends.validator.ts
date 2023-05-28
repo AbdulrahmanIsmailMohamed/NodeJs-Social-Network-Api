@@ -10,13 +10,20 @@ export const sendFriendRequestValidator = [
         .isMongoId()
         .withMessage("Invalid id format")
         .custom(async (val, { req }) => {
-            if (val === req.user._id.toString())
+            if (val === req.user._id.toString()) {
                 throw new APIError("You can't send friendRequest for you", 400);
+            }
+            const isFriendIdExist = await errorHandling(
+                User.exists({ _id: val })
+            );
+            if (!isFriendIdExist) {
+                throw new APIError(`This id ${val} not exist`, 404);
+            }
+
             const isUserExist = await errorHandling(
                 User.findOne({ _id: req.user._id })
                     .select("limitFriendshipRequest friends myFriendshipRequests")
             );
-            console.log(isUserExist);
 
             if (isUserExist) {
                 if (isUserExist.limitFriendshipRequest >= 5000) {
@@ -47,7 +54,7 @@ export const acceptFriendRequestValidator = [
             const isExistUser = await errorHandling(
                 User.findOne({ _id: req.user._id })
                     .select("limitFriends friendshipRequests friends")
-            ); console.log(isExistUser);
+            );
 
             if (isExistUser) {
                 if (isExistUser.limitFriends >= 5000) {
@@ -55,7 +62,7 @@ export const acceptFriendRequestValidator = [
                 } else if (!isExistUser.friendshipRequests.includes(val)) {
                     throw new APIError("this user not exist in friendship requests", 400);
                 } else if (isExistUser.friends.includes(val)) {
-                    throw new APIError("This user is already exist in you friends", 400);
+                    throw new APIError("This user is already exist in your friends", 400);
                 }
                 else {
                     return true
