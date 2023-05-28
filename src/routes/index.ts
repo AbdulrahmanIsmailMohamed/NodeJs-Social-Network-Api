@@ -6,7 +6,7 @@ import postsRoute from "./posts.routes";
 import commentsRoute from "./comments.routes";
 import replysRoute from "./reply.routes";
 
-export const mounter = (API: String, app: Application) => {
+export const mounter = (API: string, app: Application) => {
     app.use(`${API}/users`, usersRoute);
     app.use(`${API}/auth`, authRoute);
     app.use(`${API}/friends`, friendsRoute);

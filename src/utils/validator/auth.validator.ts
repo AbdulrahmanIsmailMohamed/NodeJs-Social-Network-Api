@@ -31,7 +31,7 @@ export const registerValidor = [
         .withMessage("The email must be not null")
         .isEmail()
         .withMessage("This email not valid")
-        .custom(async (val, { req }) => {
+        .custom(async (val) => {
             const user = await errorHandling(
                 User.exists({ email: val }).lean()
             );

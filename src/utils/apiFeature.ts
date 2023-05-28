@@ -20,7 +20,7 @@ export class APIFeature<T extends Document> {
 
     search(): this {
         if (this.queryString.keyword) {
-            let filter = {
+            const filter = {
                 $or: [
                     { firstName: { $regex: this.queryString.keyword, $options: "i" } },
                     { lastName: { $regex: this.queryString.keyword, $options: "i" } }
@@ -46,7 +46,7 @@ export class APIFeature<T extends Document> {
         return this
     }
 
-    async exic(modelName: string = "user") {
+    async exic(modelName = "user") {
         if (modelName === 'user') {
             const users = await this.mongooseQuery
                 .sort({ createdAt: -1 })

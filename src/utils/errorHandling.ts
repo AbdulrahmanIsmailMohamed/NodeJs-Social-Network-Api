@@ -1,4 +1,4 @@
-export const errorHandling = async (Promise: any) => {
+export const errorHandling = async (Promise: unknown) => {
     try {
         const result = await Promise;
         return result;

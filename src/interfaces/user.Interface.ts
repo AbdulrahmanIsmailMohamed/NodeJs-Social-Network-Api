@@ -1,6 +1,4 @@
-import { Document, ObjectId } from "mongoose";
-
-interface UserInterface extends Document {
+interface UserInterface {
     _id: string
     name: string,
     number: string,
@@ -14,7 +12,7 @@ interface UserInterface extends Document {
     profileImage?: string,
     myFriendshipRequests?: Array<object>,
     friendshipRequests?: Array<object>,
-    active?: Boolean
+    active?: boolean
 }
 
 export default UserInterface;

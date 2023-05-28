@@ -39,7 +39,7 @@ class UserController {
     });
 
     getUser = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
-        let userId: ObjectId | string = req.params.id ? req.params.id : req.user._id;
+        const userId: ObjectId | string = req.params.id ? req.params.id : req.user._id;
 
         const user = await this.userService.getUser(userId);
         if (!user) return next(new APIError("The user not found", 404));
