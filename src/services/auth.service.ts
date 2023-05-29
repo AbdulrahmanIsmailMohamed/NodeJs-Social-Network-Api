@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import User from "../models/User";
 import { errorHandling } from "../utils/errorHandling";
 import APIError from '../utils/apiError';
-import SenitizeData from '../utils/senitizeData';
+import SenitizeData from '../utils/sanitizeData';
 
 class AuthService {
     senitizeData: SenitizeData;

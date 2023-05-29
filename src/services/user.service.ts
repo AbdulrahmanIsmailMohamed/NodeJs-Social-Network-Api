@@ -4,7 +4,7 @@ import UserInterface from "../interfaces/user.Interface";
 import User from "../models/User";
 import { errorHandling } from "../utils/errorHandling";
 import { APIFeature } from '../utils/apiFeature';
-import SenitizeData from '../utils/senitizeData';
+import SenitizeData from '../utils/sanitizeData';
 import APIError from '../utils/apiError';
 
 class UserService {

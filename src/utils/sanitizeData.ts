@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { PostInterface } from "../interfaces/post.interface";
+import { PostSanitize } from "../interfaces/post.interface";
 import { CommentsInterface } from "../interfaces/comments.interface";
 import UserInterface from "../interfaces/user.Interface";
 
-class SenitizeData {
+class SanitizeData {
     userLogin = (user: UserInterface) => (
         {
             _id: user._id,
@@ -32,7 +31,7 @@ class SenitizeData {
         }
     );
 
-    post = (post: PostInterface) => (
+    post = (post: PostSanitize) => (
         {
             _id: post._id,
             userId: post.userId,
@@ -57,4 +56,4 @@ class SenitizeData {
     )
 }
 
-export default SenitizeData;
+export default SanitizeData;

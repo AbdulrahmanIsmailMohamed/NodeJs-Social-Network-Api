@@ -48,7 +48,7 @@ export class APIFeature<T extends Document> {
     }
 
     async execute(modelName: string): Promise<{
-        users: T[];
+        data: T[];
         paginationResult: Paginate
     }> {
         let query: Query<T[], T> = this.mongooseQuery.sort({ createdAt: -1 });
@@ -62,7 +62,7 @@ export class APIFeature<T extends Document> {
         }
 
         const data: T[] = await query.exec();
-        return { users: data, paginationResult: this.paginationResult };
+        return { data, paginationResult: this.paginationResult };
     }
-    
+
 }

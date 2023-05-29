@@ -1,7 +1,7 @@
 import APIError from "../utils/apiError";
 import { Comment } from "../models/Comments"
 import { errorHandling } from "../utils/errorHandling"
-import SenitizeData from '../utils/senitizeData';
+import SenitizeData from '../utils/sanitizeData';
 import { APIFeature } from "../utils/apiFeature";
 import { features } from "process";
 

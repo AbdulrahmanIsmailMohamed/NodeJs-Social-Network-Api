@@ -1,7 +1,8 @@
-import { PostInterface } from "interfaces/post.interface";
 import { Schema, model } from "mongoose";
 
-const postShema = new Schema<PostInterface>(
+import { IPost } from "interfaces/post.interface";
+
+const postShema = new Schema<IPost>(
     {
         userId: {
             type: Schema.Types.ObjectId,
@@ -39,6 +40,6 @@ const postShema = new Schema<PostInterface>(
     { timestamps: true }
 );
 
-const Post = model<PostInterface>("Post", postShema);
+const Post = model<IPost>("Post", postShema);
 
 export default Post;

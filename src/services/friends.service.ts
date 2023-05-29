@@ -1,7 +1,7 @@
 import { errorHandling } from "../utils/errorHandling";
 import User from "../models/User";
 import APIError from "../utils/apiError";
-import SenitizeData from "../utils/senitizeData";
+import SenitizeData from "../utils/sanitizeData";
 import { ObjectId } from "mongoose";
 
 class FriendsService {

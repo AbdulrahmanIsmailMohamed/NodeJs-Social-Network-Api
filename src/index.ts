@@ -7,7 +7,7 @@ dotenv.config();
 
 import connectDB from "./config/connect";
 import ErrorHandlingMiddleware from "./middlewares/errorHandlingMW";
-import { mounter } from "./routes";
+import routes from "./routes";
 import { morganStream } from "./logger";
 import APIError from "./utils/apiError";
 
@@ -32,7 +32,8 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // routes
-mounter(API, app);
+app.use(`${API}/`, routes)
+
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
     next(new APIError(`Can't Find This Route ${req.originalUrl}!!`, 404));
 });

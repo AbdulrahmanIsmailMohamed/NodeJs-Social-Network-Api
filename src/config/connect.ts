@@ -4,7 +4,7 @@ const connectDB = () => {
     // Connect to MongoDB
     mongoose
         .set("strictQuery", false)
-        .connect(process.env.MONGO_URL)
+        .connect(process.env.MONGO_URL as string)
         .then((data) => {
             console.log(`DataBase Connected: ${data.connection.host}`);
         }).catch((err) => {
