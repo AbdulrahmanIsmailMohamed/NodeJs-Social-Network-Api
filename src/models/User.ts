@@ -1,9 +1,9 @@
-import { Model, Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 
-import UserInterface from "interfaces/user.Interface";
+import { IUser } from "../interfaces/user.Interface";
 
-const userSchema = new Schema<UserInterface>(
+const userSchema = new Schema<IUser>(
     {
         name: {
             type: String,
@@ -74,6 +74,6 @@ userSchema.pre(/^find/, function (next) {
     next()
 });
 
-const User: Model<UserInterface> = model<UserInterface>("User", userSchema);
+const User = model<IUser>("User", userSchema);
 
 export default User;

@@ -1,5 +1,4 @@
-interface UserInterface {
-    _id: string
+export interface IUser {
     name: string,
     number: string,
     email: string,
@@ -15,4 +14,13 @@ interface UserInterface {
     active?: boolean
 }
 
-export default UserInterface;
+export interface UpdateLoggedUser {
+    userId: string,
+    name: string,
+    address: string,
+    number: string,
+}
+
+export interface GetUser extends UpdateLoggedUser {
+    profileImage: string,
+} 

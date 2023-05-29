@@ -31,6 +31,7 @@ export interface PostSanitize extends IPost {
 export interface Features {
     page: number,
     limit: number,
+    keyword: string,
     userId?: string,
     friendId?: string,
 }
