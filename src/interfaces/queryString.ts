@@ -1,5 +1,5 @@
-export interface QueryString {
-    keyword: string,
-    limit: number,
-    page: number
+import { Features } from "./post.interface";
+
+export interface QueryString extends Features {
+    keyword?: string,
 }

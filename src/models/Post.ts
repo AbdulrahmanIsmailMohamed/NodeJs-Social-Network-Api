@@ -39,6 +39,6 @@ const postShema = new Schema<PostInterface>(
     { timestamps: true }
 );
 
-const Post = model("Post", postShema);
+const Post = model<PostInterface>("Post", postShema);
 
 export default Post;

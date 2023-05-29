@@ -1,5 +1,6 @@
-import { CommentsInterface } from "../interfaces/comments.interface";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PostInterface } from "../interfaces/post.interface";
+import { CommentsInterface } from "../interfaces/comments.interface";
 import UserInterface from "../interfaces/user.Interface";
 
 class SenitizeData {
