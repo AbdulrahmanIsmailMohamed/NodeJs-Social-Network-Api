@@ -3,6 +3,7 @@ export interface IUser {
     number: string,
     email: string,
     password: string,
+    _id?: string
     isAdmin?: boolean,
     limitFriends?: number,
     limitFriendshipRequest?: number,

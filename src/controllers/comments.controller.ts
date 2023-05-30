@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandlerMW";
 import { CommentService } from "../services/comments.service";
 import APIError from "../utils/apiError";
-import AuthenticatedRequest from "../interfaces/authenticatedRequest.interface";
+import AuthenticatedRequest from "../interfaces/authentication.interface";
 
 export class CommentController {
     private commentService: CommentService;

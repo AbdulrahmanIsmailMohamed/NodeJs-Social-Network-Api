@@ -1,9 +1,9 @@
 import { PostSanitize } from "../interfaces/post.interface";
 import { CommentsInterface } from "../interfaces/comments.interface";
-import UserInterface from "../interfaces/user.Interface";
+import { LoginSanitize, RegisterSanitize } from "../interfaces/authentication.interface";
 
 class SanitizeData {
-    userLogin = (user: UserInterface) => (
+    userLogin = (user: LoginSanitize) => (
         {
             _id: user._id,
             name: user.name,
@@ -11,17 +11,7 @@ class SanitizeData {
         }
     );
 
-    user = (user: UserInterface) => (
-        {
-            _id: user._id,
-            name: user.name,
-            profileImage: user.profileImage,
-            friends: user.friends,
-            address: user.address
-        }
-    )
-
-    userRegister = (user: UserInterface) => (
+    userRegister = (user: RegisterSanitize) => (
         {
             _id: user._id,
             name: user.name,

@@ -3,7 +3,7 @@ import { NextFunction, Response } from "express";
 import { PostService } from "../services/posts.service";
 import { asyncHandler } from "../middlewares/asyncHandlerMW";
 import APIError from "../utils/apiError";
-import AuthenticatedRequest from "../interfaces/authenticatedRequest.interface";
+import AuthenticatedRequest from "../interfaces/authentication.interface";
 import {
     CreatePost,
     DeletePost,
@@ -122,5 +122,5 @@ export class PostController {
         }
         else return next(new APIError("Please login", 401));
     });
-    
+
 } 

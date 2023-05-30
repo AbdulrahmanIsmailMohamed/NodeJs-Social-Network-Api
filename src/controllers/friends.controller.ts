@@ -3,7 +3,7 @@ import { ObjectId } from "mongoose";
 
 import { asyncHandler } from "../middlewares/asyncHandlerMW";
 import FriendsService from "../services/friends.service";
-import AuthenticatedRequest from "interfaces/authenticatedRequest.interface";
+import AuthenticatedRequest from "interfaces/authentication.interface";
 import APIError from "../utils/apiError";
 
 class FriendsController {

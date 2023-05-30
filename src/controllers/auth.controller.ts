@@ -4,28 +4,53 @@ import { asyncHandler } from "../middlewares/asyncHandlerMW";
 import AuthService from "../services/auth.service";
 import APIError from "../utils/apiError";
 import { createToken } from "../utils/createToken";
+import {
+    LoginBody,
+    LoginSanitize,
+    RegisterBody,
+    RegisterSanitize
+} from "../interfaces/authentication.interface";
 
 class AuthController {
-    authService: AuthService;
+    private authService: AuthService;
     constructor() {
         this.authService = new AuthService()
     }
+
     register = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const user = await this.authService.register(req.body);
-        if (!user) return next(new APIError("The User Can't Be Registerd!", 400));
-        const token = createToken(user)
-        res.status(201).json({ status: "Success", user , token});
+        const registerBody: RegisterBody = {
+            name: req.body.name,
+            email: req.body.name,
+            password: req.body.password,
+            number: req.body.number
+        };
+
+        const result: RegisterSanitize = await this.authService.register(registerBody);
+        if (!result) return next(new APIError("The User Can't Be Registerd!", 400));
+        const token = createToken(result._id);
+
+        res.status(201).json({
+            status: "Success",
+            user: result,
+            token
+        });
     });
 
     login = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const userData = {
+        const loginBody: LoginBody = {
             email: req.body.email,
             password: req.body.password
         }
-        const user = await this.authService.login(userData);
-        if (!user) return next(new APIError("The User Can't Be Created!", 400));
-        const token = createToken(user)
-        res.status(201).json({ status: "Success", user, token });
+
+        const result: LoginSanitize = await this.authService.login(loginBody);
+        if (!result) return next(new APIError("The User Can't Be Created!", 401));
+        const token = createToken(result._id)
+
+        res.status(200).json({
+            status: "Success",
+            user: result,
+            token
+        });
     });
 }
 

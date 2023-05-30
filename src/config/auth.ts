@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import APIError from "../utils/apiError";
 import User from "../models/User";
 import DecodedToken from "../interfaces/decodedToken.interface";
-import AuthenticatedRequest from "../interfaces/authenticatedRequest.interface";
+import { AuthenticatedRequest } from "../interfaces/authentication.interface";
 
 export const protectRoute = asyncHandler(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -17,7 +17,7 @@ export const protectRoute = asyncHandler(
             token = req.headers.authorization.split(" ")[1];
         }
         if (!token) return next(new APIError("Please login to access this route", 401));
-        const decoded = jwt.verify(token, process.env.JWT_SEC) as DecodedToken;
+        const decoded = jwt.verify(token, process.env.JWT_SEC as string) as DecodedToken;
         if (!decoded) return next(new APIError("Invalid Token", 401));
         const user = await User.findById(decoded.userId);
         if (!user)
@@ -31,9 +31,6 @@ export const protectRoute = asyncHandler(
 
 export const allowTo = asyncHandler(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        console.log(req.user.isAdmin);
-        if (!req.user.isAdmin) {
-            return next(new APIError("Can't access this route", 401));
-        }
-        next();
+        if (req.user && req.user.isAdmin) return next();
+        return next(new APIError("Can't access this route", 401));
     })

@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import UserService from "../services/user.service";
 import { asyncHandler } from '../middlewares/asyncHandlerMW';
 import APIError from "../utils/apiError";
-import AuthenticatedRequest from "interfaces/authenticatedRequest.interface";
+import { AuthenticatedRequest } from "interfaces/authentication.interface";
 import { GetUser, UpdateLoggedUser } from "../interfaces/user.Interface";
 import { Features, GetAPIFeaturesResult } from "../interfaces/post.interface";
 
@@ -16,7 +16,7 @@ class UserController {
     updateLoggedUser = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         if (req.user) {
             const userBody: UpdateLoggedUser = {
-                userId: req.user._id,
+                userId: req.user._id as string,
                 name: req.body.name,
                 address: req.body.address,
                 number: req.body.number
@@ -49,7 +49,7 @@ class UserController {
     });
 
     getUser = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        const userId: string = req.params.id ? req.params.id : req.user._id;
+        const userId: string = req.params.id || (req.user && req.user._id as string) || "please login";
 
         const user: GetUser = await this.userService.getUser(userId);
         if (!user) return next(new APIError("The user not found", 404));
@@ -58,7 +58,7 @@ class UserController {
 
     inactiveLoggedUser = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         if (req.user) {
-            const user: string = await this.userService.inActiveLoggedUser(req.user._id);
+            const user: string = await this.userService.inActiveLoggedUser(req.user._id as string);
             if (!user) return next(new APIError("The user Not found!", 404));
             res.status(200).json({ status: "Success", message: user });
         }

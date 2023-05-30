@@ -4,30 +4,38 @@ import User from "../models/User";
 import { errorHandling } from "../utils/errorHandling";
 import APIError from '../utils/apiError';
 import SenitizeData from '../utils/sanitizeData';
+import { ILogin, LoginBody, LoginSanitize, RegisterBody, RegisterSanitize } from '../interfaces/authentication.interface';
 
 class AuthService {
-    senitizeData: SenitizeData;
+    private senitizeData: SenitizeData;
     constructor() {
-        this.senitizeData = new SenitizeData()
+        this.senitizeData = new SenitizeData();
     }
 
-    register = async (userData: unknown): Promise<any> => {
-        const user = await errorHandling(User.create(userData));
-        if (!user) throw new APIError("event error when you registerd", 400)
+    register = async (registerBody: RegisterBody): Promise<RegisterSanitize> => {
+        const user = await errorHandling(User.create(registerBody)) as RegisterSanitize;
+        if (!user) throw new APIError("event error when you registerd", 400);
         return this.senitizeData.userRegister(user);
     }
 
-    login = async (userData: any): Promise<any> => {
-        const user = await errorHandling(User.findOneAndUpdate(
-            { email: userData.email },
-            { active: true },
-            { new: true }
-        ));
-        if (!user || !bcrypt.compareSync(userData.password, user.password)) {
-            return Promise.reject(new APIError("Invalid email or password", 401));
+    login = async (loginBody: LoginBody): Promise<LoginSanitize> => {
+        const { email, password } = loginBody;
+
+        const user = await errorHandling(
+            User.findOneAndUpdate(
+                { email },
+                { active: true },
+                { new: true }
+            )
+        ) as ILogin;
+
+        if (!user || !bcrypt.compareSync(password, user.password)) {
+            throw new APIError("Invalid email or password", 401);
         }
+
         return this.senitizeData.userLogin(user);
     }
+
 }
 
 export default AuthService;

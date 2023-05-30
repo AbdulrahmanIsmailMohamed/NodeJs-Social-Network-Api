@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 
 import { ReplyService } from '../services/reply.service';
 import { asyncHandler } from '../middlewares/asyncHandlerMW';
-import AuthenticatedRequest from '../interfaces/authenticatedRequest.interface';
+import AuthenticatedRequest from '../interfaces/authentication.interface';
 import APIError from '../utils/apiError';
 
 export class ReplyController {
