@@ -4,6 +4,7 @@ import { errorHandling } from '../errorHandling';
 import { Comment } from '../../models/Comments';
 import { validatorMW } from '../../middlewares/validatorMW';
 import APIError from '../apiError';
+import { ReplyValidator } from "../../interfaces/reply.interface";
 
 export const createReplyValidator = [
     check("commentId")
@@ -23,7 +24,8 @@ export const createReplyValidator = [
                         },
                         select: "userId postType"
                     })
-            );
+            ) as ReplyValidator;
+
             if (isCommentExist.postId) {
                 if (isCommentExist.postId.postType === "public") return true;
                 if (isCommentExist.postId.postType === "friends") {
@@ -54,7 +56,7 @@ export const getReplysValidator = [
                         },
                         select: "userId postType"
                     })
-            );
+            ) as ReplyValidator;
             if (isCommentExist.postId) {
                 if (isCommentExist.postId.postType === "public") return true;
                 if (isCommentExist.postId.postType === "friends") {
@@ -85,7 +87,7 @@ export const deleteReplyValidator = [
                         },
                         select: "userId postType"
                     })
-            );
+            ) as ReplyValidator;
             if (isCommentExist.postId) {
                 if (isCommentExist.postId.postType === "public") return true;
                 if (isCommentExist.postId.postType === "friends") {
@@ -100,10 +102,11 @@ export const deleteReplyValidator = [
         .isMongoId()
         .withMessage("Invalid Comment Id format!!")
         .custom(async (val, { req }) => {
+            // req.params ?   const commentId = req.params.commentId as string;
             const isReplyExist = await errorHandling(
                 Comment.exists({
-                    _id: req.params.commentId,
-                    reply: { $elemMatch: { _id: req.params.replyId } }
+                    _id: req.params ? req.params.commentId : "",
+                    reply: { $elemMatch: { _id: val } }
                 })
             )
             if (isReplyExist) return true;

@@ -4,6 +4,8 @@ import Post from '../../models/Post';
 import APIError from "../../utils/apiError";
 import { validatorMW } from '../../middlewares/validatorMW';
 import { Comment } from '../../models/Comments';
+import { CommentSanitize } from '../../interfaces/comments.interface';
+import { PostSanitize } from '../../interfaces/post.interface';
 
 export const createCommentValidator = [
     check("postId")
@@ -12,19 +14,21 @@ export const createCommentValidator = [
         .custom(async (val, { req }) => {
             const isPostExist = await errorHandling(
                 Post.findOne({ _id: val }).populate("userId", "friends")
-            );
+            ) as PostSanitize;
 
             if (isPostExist) {
+                const userId = isPostExist.userId as unknown as { _id: string; friends: string[] }
+
                 if (
                     isPostExist.postType === "private" &&
-                    isPostExist.userId._id === req.user._id.toString() ||
+                    userId._id === req.user._id.toString() ||
                     isPostExist.postType === "public"
                 ) return true;
 
                 else if (isPostExist.postType === "friends") {
                     if (
-                        isPostExist.userId.friends.includes(val) ||
-                        isPostExist.userId._id.toString() === req.user._id.toString()
+                        userId.friends.includes(val) ||
+                        userId._id.toString() === req.user._id.toString()
                     ) return true
                     else throw new APIError("Your not access this post", 404);
                 }
@@ -84,7 +88,7 @@ export const deleteCommentValidator = [
                         path: "postId",
                         match: { userId: req.user._id }
                     })
-            )
+            ) as CommentSanitize
             console.log(isOwnerPost.postId);
             if (isOwnerPost.postId) return true;
             throw new APIError("comment not found", 404);
@@ -102,14 +106,17 @@ export const getCommentValidator = [
                     .select("postId")
                     .populate({
                         path: "postId",
+                        select: "postType userId",
                         match: { $or: [{ postType: "public" }, { postType: "friends" }] }
                     })
-            );
+            ) as CommentSanitize;
             // if post type equal public => ok,else if it friends check if user exist in owner of the post friends 
             if (isCommentExist.postId) {
-                if (isCommentExist.postId.postType === "public") return true;
-                if (isCommentExist.postId.postType === "friends") {
-                    if (req.user.friends.includes(isCommentExist.postId.userId)) return true
+                const postId = isCommentExist.postId as unknown as { postType: string; userId: string }
+
+                if (postId.postType === "public") return true;
+                if (postId.postType === "friends") {
+                    if (req.user.friends.includes(postId.userId)) return true
                 }
             }
             throw new APIError("comment not found", 404);
@@ -130,7 +137,7 @@ export const getPostCommentsValidator = [
                         { postType: "friends" }
                     ]
                 }).select("userId postType")
-            );
+            ) as PostSanitize;
             if (isPostExist) {
                 if (isPostExist.postType === "public") return true;
                 else if (isPostExist.postType === "friends") {
