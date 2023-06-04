@@ -3,7 +3,7 @@ import { NextFunction, Response } from "express";
 import { PostService } from "../services/posts.service";
 import { asyncHandler } from "../middlewares/asyncHandlerMW";
 import APIError from "../utils/apiError";
-import AuthenticatedRequest from "../interfaces/authentication.interface";
+import { AuthenticatedRequest } from "../interfaces/authentication.interface";
 import {
     CreatePost,
     DeletePost,
@@ -33,8 +33,8 @@ export class PostController {
     updatePost = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         if (req.user) {
             const postBody: UpdatePost = {
-                postId: req.params.id,
-                userId: req.user._id,
+                postId: req.params.id as string,
+                userId: req.user._id as string,
                 post: req.body.post,
                 postType: req.body.postType
             }

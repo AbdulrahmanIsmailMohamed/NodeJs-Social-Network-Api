@@ -1,8 +1,8 @@
 import { Schema, model } from "mongoose";
 
-import { CommentsInterface } from "../interfaces/comments.interface";
+import { IComment } from "../interfaces/comments.interface";
 
-const commentSchema = new Schema<CommentsInterface>(
+const commentSchema = new Schema<IComment>(
     {
         userId: {
             type: Schema.Types.ObjectId,
@@ -57,4 +57,4 @@ commentSchema.pre(/^find/, function () {
     this.select("-__v")
 });
 
-export const Comment = model("Comment", commentSchema);
+export const Comment = model<IComment>("Comment", commentSchema);

@@ -1,5 +1,5 @@
 import { PostSanitize } from "../interfaces/post.interface";
-import { CommentsInterface } from "../interfaces/comments.interface";
+import { CommentSanitize } from "../interfaces/comments.interface";
 import { LoginSanitize, RegisterSanitize } from "../interfaces/authentication.interface";
 
 class SanitizeData {
@@ -33,7 +33,7 @@ class SanitizeData {
         }
     );
 
-    comments = (comment: CommentsInterface) => (
+    comments = (comment: CommentSanitize) => (
         {
             _id: comment._id,
             userId: comment.userId,

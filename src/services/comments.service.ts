@@ -3,7 +3,14 @@ import { Comment } from "../models/Comments"
 import { errorHandling } from "../utils/errorHandling"
 import SenitizeData from '../utils/sanitizeData';
 import { APIFeature } from "../utils/apiFeature";
-import { features } from "process";
+import { Features } from "../interfaces/post.interface";
+import {
+    CommentSanitize,
+    CreateComment,
+    DeleteComment,
+    GetAPIFeaturesResult,
+    UpdateComment
+} from "../interfaces/comments.interface";
 
 export class CommentService {
     private senitizeData: SenitizeData;
@@ -11,32 +18,35 @@ export class CommentService {
         this.senitizeData = new SenitizeData();
     }
 
-    createComment = async (commentBody: any): Promise<any> => {
+    createComment = async (commentBody: CreateComment): Promise<CommentSanitize> => {
         const comment = await errorHandling(
-            (await Comment.create(commentBody)).populate("postId", "name imageProfile")
-        );
+            (await Comment.create(commentBody))
+                .populate("userId", "name imageProfile")
+        ) as CommentSanitize;
         if (!comment) throw new APIError("Can't create comment", 400);
         return this.senitizeData.comments(comment);
     }
 
-    updateComment = async (data: any): Promise<any> => {
-        const { comment, image } = data.commentBody;
+    updateComment = async (commentData: UpdateComment): Promise<CommentSanitize> => {
+        const { commentId, userId, commentBody } = commentData;
+
         const updateComment = await errorHandling(
             Comment.findOneAndUpdate(
                 {
-                    _id: data.commentId,
-                    userId: data.userId,
+                    _id: commentId,
+                    userId
                 },
-                { comment, image },
+                commentBody,
                 { new: true }
             ).populate("userId", "name profileImage")
-        );
+        ) as CommentSanitize;
         if (!updateComment) throw new APIError("Can't find this comment", 404);
         return updateComment
     }
 
-    deleteComment = async (data: any): Promise<string> => {
-        const { commentId, userId } = data
+    deleteComment = async (commentData: DeleteComment): Promise<string> => {
+        const { commentId, userId } = commentData;
+
         const comment = await errorHandling(
             Comment.findOneAndDelete({ _id: commentId, userId }).lean()
         );
@@ -59,22 +69,25 @@ export class CommentService {
         return "Done";
     }
 
-    getPostComments = async (features: any): Promise<any> => {
+    getPostComments = async (features: Features): Promise<GetAPIFeaturesResult> => {
         const { postId } = features;
-        const countDocuments = await errorHandling(Comment.countDocuments({ postId }));
+        const countDocuments = await errorHandling(Comment.countDocuments({ postId })) as number;
         if (!countDocuments) throw new APIError("can't find comments", 404);
 
-        const apiFeatures = new APIFeature(Comment.find({ postId }), features).pagination(countDocuments);
-        const comments = apiFeatures.exic("posts")
+        const apiFeatures = new APIFeature(Comment.find({ postId }), features)
+            .pagination(countDocuments);
+
+        const comments = await errorHandling(apiFeatures.execute("posts")) as GetAPIFeaturesResult;
         if (!comments) throw new APIError("Can't find comments", 404)
         return comments
     }
 
-    getComment = async (commentId: any): Promise<any> => {
+    getComment = async (commentId: string): Promise<CommentSanitize> => {
         const comment = await errorHandling(
             Comment.findById(commentId).populate("userId", "name profileImage")
-        );
+        ) as CommentSanitize;
+        
         if (!comment) throw new APIError("can't find comment", 404);
-        return comment
+        return this.senitizeData.comments(comment)
     }
 }
