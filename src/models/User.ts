@@ -32,15 +32,17 @@ const userSchema = new Schema<IUser>(
         friends: [{
             type: Schema.Types.ObjectId,
             ref: "User",
-            maxlength: 2
+            maxlength: 5000
         }],
         friendshipRequests: [{
             type: Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User",
+            maxlength:5000
         }],
         myFriendshipRequests: [{
             type: Schema.Types.ObjectId,
-            ref: "User"
+            ref: "User",
+            maxlength: 5000
         }],
         limitFriends: {
             type: Number,

@@ -18,6 +18,9 @@ if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
 }
 
+const filename = process.mainModule?.filename ?? '';
+const label = path.basename(filename);
+
 const dailyRotateFileTransport = new DailyRotateFile({
     filename: `${logDir}/%DATE%-results.log`,
     datePattern: datePatternConfiguration.default,
@@ -31,7 +34,7 @@ const logger = createLogger({
     level: env === 'development' ? 'verbose' : 'info',
     handleExceptions: true,
     format: format.combine(
-        format.label({ label: path.basename(module.parent.filename) }),
+        format.label({ label }),
         format.timestamp({
             format: 'YYYY-MM-DD HH:mm:ss',
         }),
@@ -42,7 +45,7 @@ const logger = createLogger({
             level: 'info',
             handleExceptions: true,
             format: format.combine(
-                format.label({ label: path.basename(module.parent.filename) }),
+                format.label({ label }),
                 format.colorize(),
                 format.printf(
                     info => `${info.timestamp}[${info.label}] ${info.level}: ${info.message}`,

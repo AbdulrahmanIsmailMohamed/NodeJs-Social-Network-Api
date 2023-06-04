@@ -4,6 +4,7 @@ import APIError from "../apiError";
 import { validatorMW } from "../../middlewares/validatorMW";
 import { errorHandling } from "../errorHandling";
 import User from "../../models/User";
+import { FriendsValidator } from "../../interfaces/friends.interface";
 
 export const sendFriendRequestValidator = [
     check("id")
@@ -22,8 +23,8 @@ export const sendFriendRequestValidator = [
 
             const isUserExist = await errorHandling(
                 User.findOne({ _id: req.user._id })
-                    .select("limitFriendshipRequest friends myFriendshipRequests")
-            );
+                    .select("limitFriendshipRequest limitFriends friends myFriendshipRequests")
+            ) as FriendsValidator;
 
             if (isUserExist) {
                 if (isUserExist.limitFriendshipRequest >= 5000) {
@@ -53,8 +54,8 @@ export const acceptFriendRequestValidator = [
         .custom(async (val, { req }) => {
             const isExistUser = await errorHandling(
                 User.findOne({ _id: req.user._id })
-                    .select("limitFriends friendshipRequests friends")
-            );
+                    .select("limitFriends limitFriends friendshipRequests friends")
+            ) as FriendsValidator;
 
             if (isExistUser) {
                 if (isExistUser.limitFriends >= 5000) {

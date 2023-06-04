@@ -2,7 +2,12 @@ import { errorHandling } from "../utils/errorHandling";
 import User from "../models/User";
 import APIError from "../utils/apiError";
 import SenitizeData from "../utils/sanitizeData";
-import { ObjectId } from "mongoose";
+import {
+    FriendshipRequests,
+    MyFriendshipRequests,
+    FriendRequest,
+    Friends
+} from "../interfaces/friends.interface";
 
 class FriendsService {
     senitizeData: SenitizeData;
@@ -10,8 +15,9 @@ class FriendsService {
         this.senitizeData = new SenitizeData()
     }
 
-    sendFriendRequest = async (data: any): Promise<any> => {
-        const { userId, friendId } = data;
+    sendFriendRequest = async (userData: FriendRequest): Promise<string> => {
+        const { userId, friendId } = userData;
+
         let operations = [
             // add operation to update friends's documents
             {
@@ -31,39 +37,36 @@ class FriendsService {
                 },
             }
         ];
-
-        const result = await errorHandling(
-            User.bulkWrite(operations as [], {})
-        );
-
+        const result = await User.bulkWrite(operations as [], {});
         if (result.modifiedCount < 0) {
             throw new APIError("Can't Add friedship request id!!", 400);
         }
         return "Friendship request sent";
     }
 
-    getFriendsRequest = async (userId: string): Promise<any> => {
+    getFriendsRequest = async (userId: string): Promise<FriendshipRequests> => {
         const user = await errorHandling(
             User.findById(userId)
                 .select("friendshipRequests")
                 .populate("friendshipRequests", "name profileImage")
-        );
+        ) as FriendshipRequests;
         if (!user) throw new APIError("Not Found User", 404);
         return user
     }
 
-    getMyFriendsRequest = async (userId: string): Promise<any> => {
+    getMyFriendsRequest = async (userId: string): Promise<MyFriendshipRequests> => {
         const myFriendsRequest = await errorHandling(
             User.findById(userId)
                 .select("myFriendshipRequests")
                 .populate("myFriendshipRequests", "name profileImage")
-        );
+        ) as MyFriendshipRequests;
         if (!myFriendsRequest) throw new APIError("Not Found User", 404);
         return myFriendsRequest
     }
 
-    acceptFriendRequest = async (userData: any): Promise<any> => {
+    acceptFriendRequest = async (userData: FriendRequest): Promise<string> => {
         const { userId, friendId } = userData;
+
         const operations = [
             {
                 updateOne: {
@@ -91,9 +94,7 @@ class FriendsService {
             }
         ];
 
-        const result = await errorHandling(
-            User.bulkWrite(operations as [], {})
-        );
+        const result = await User.bulkWrite(operations as [], {})
 
         if (result.modifiedCount < 0) {
             throw new APIError("The user is already exist in friends", 400);
@@ -101,8 +102,9 @@ class FriendsService {
         return "The friendship request was accepted"
     }
 
-    cancelFriendRequest = async (userData: any): Promise<any> => {
+    cancelFriendRequest = async (userData: FriendRequest): Promise<string> => {
         const { userId, friendId } = userData;
+
         const operations = [
             {
                 updateOne: {
@@ -123,17 +125,16 @@ class FriendsService {
             }
         ];
 
-        const result = await errorHandling(
-            User.bulkWrite(operations as [], {})
-        );
+        const result = await User.bulkWrite(operations as [], {})
         if (result.modifiedCount < 0) {
             throw new APIError("Can't Find User for this id!!", 404);
         }
         return "Friend request cancelled";
     }
 
-    deleteFriendFromFriends = async (userData: any): Promise<string> => {
+    deleteFriendFromFriends = async (userData: FriendRequest): Promise<string> => {
         const { userId, friendId } = userData;
+
         const operations = [
             {
                 updateOne: {
@@ -155,21 +156,19 @@ class FriendsService {
             }
         ];
 
-        const result = await errorHandling(
-            User.bulkWrite(operations as [], {})
-        );
+        const result = await User.bulkWrite(operations as [], {})
         if (result.modifiedCount < 0) {
             throw new APIError("Can't delete your friend!!", 400);
         }
         return "Your Friend has been removed";
     }
 
-    getFriends = async (userId: any) => {
+    getFriends = async (userId: string): Promise<Friends> => {
         const friends = await errorHandling(
             User.findById(userId)
                 .select("friends")
                 .populate("friends", "name profileImage")
-        );
+        ) as Friends;
         if (!friends) throw new APIError("Can't Find friends For this id!!", 404);
         return friends;
     }
