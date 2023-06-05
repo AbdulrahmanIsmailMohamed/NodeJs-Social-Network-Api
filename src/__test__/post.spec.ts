@@ -10,14 +10,12 @@ const userData = {
     email: "fortest@gmail.com",
     password: "123456Aa@"
 }
-const friendData = {
-    _id: "647212fc02d2d5bd5f342772",
-    email: "user322ddd22@gmail.com",
-    password: "123456Aa@"
-}
 const post = {
     post: "This post for testing",
     postType: "friends"
+}
+const updatePost = {
+    post: "This post for testing updated",
 }
 
 describe("Post Testing", () => {
@@ -44,7 +42,7 @@ describe("Post Testing", () => {
 
             expect(res.status).to.be.equal(401)
         });
-    })
+    });
 
     describe("GET /api/v1/posts", () => {
         it("should Get Friends posts", async () => {
@@ -63,5 +61,41 @@ describe("Post Testing", () => {
 
             expect(res.status).to.be.equal(401)
         });
-    })
+    });
+
+    describe("PATCH /api/v1/posts/:id", () => {
+        it("should update post", async () => {
+            const res = await server.patch("/api/v1/posts/6473b4f47fbe5776f8db2f00")
+                .set("Authorization", `Bearer ${token}`)
+                .send(updatePost)
+
+            expect(res.body.status).to.be.equal("Success");
+            expect(res.body).have.property("post")
+            expect(res.status).to.be.equal(200);
+        });
+
+        it("should not updated post if post id not exist", async () => {
+            const res = await server.patch("/api/v1/posts/6473b4f47fbe5776f8db2f01")
+                .set("Authorization", `Bearer ${token}`)
+                .send(updatePost);
+
+            expect(res.status).to.be.equal(400)
+        });
+    });
+
+    describe("Delete /api/v1/posts/:id", () => {
+        it("should delete post", async () => {
+            const res = await server.delete("/api/v1/posts/6473b4f47fbe5776f8db2f00")
+                .set("Authorization", `Bearer ${token}`)
+
+            expect(res.status).to.be.equal(204);
+        });
+
+        it("should not Deleted post if user not owner of post", async () => {
+            const res = await server.delete("/api/v1/posts/6473b4f47fbe5776f8db2f01")
+                .set("Authorization", `Bearer ${token}`)
+
+            expect(res.status).to.be.equal(400)
+        });
+    });
 })

@@ -87,7 +87,7 @@ export class PostController {
             const features: Features = {
                 limit: parseInt(req.query.limit as string) * 1 || 5,
                 page: parseInt(req.query.page as string) * 1 || 1,
-                userId: req.user._id,
+                userId: req.user._id as string,
                 friendId: req.params.userId
             };
             const result: GetAPIFeaturesResult = await this.postService.getUserPosts(features);

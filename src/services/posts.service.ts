@@ -4,6 +4,8 @@ import { errorHandling } from "../utils/errorHandling"
 import SenitizeData from "../utils/sanitizeData";
 import { APIFeature } from "../utils/apiFeature";
 import User from '../models/User';
+import { ObjectId } from 'mongoose';
+
 import {
     CreatePost,
     DeletePost,
@@ -72,18 +74,21 @@ export class PostService {
     getUserPosts = async (features: Features): Promise<GetAPIFeaturesResult> => {
         const { userId, friendId } = features;
 
-        const isUserFriend = await errorHandling(User.exists({ _id: userId, friends: friendId }).lean()) as any;
+        const user = await errorHandling(User.findById(userId).select("friends")) as any;
+        if (!user) throw new APIError("Not Found", 404);
+
+        const isUserFriend: boolean = user.friends.includes(friendId);
 
         const query = {
             userId: friendId,
-            postType: isUserFriend ? { $in: ["public", "friends"] } : "public"
+            postType: { $in: isUserFriend ? ["public", "friends"] : "public" }
         };
-        const countDocument = await errorHandling(Post.countDocuments(query)) as number;
 
+        const countDocument = await errorHandling(Post.countDocuments(query)) as number;
         const apiFeature = new APIFeature(Post.find(query), features)
             .pagination(countDocument);
-
         const result = await errorHandling(apiFeature.execute("posts")) as GetAPIFeaturesResult;
+
         return result;
     }
 
@@ -111,7 +116,7 @@ export class PostService {
 
         const apiFeature = new APIFeature(Post.find(query), features)
             .pagination(countPosts);
-            
+
         const result = await errorHandling(apiFeature.execute("posts")) as GetAPIFeaturesResult;
         return result
     }
