@@ -140,8 +140,11 @@ export const getPostCommentsValidator = [
             ) as PostSanitize;
             if (isPostExist) {
                 if (isPostExist.postType === "public") return true;
-                else if (isPostExist.postType === "friends") {
-                    if (req.user.friends.includes(isPostExist.userId)) return true;
+                else if (isPostExist.postType === "friends") {                    
+                    if (
+                        req.user.friends.includes(isPostExist.userId) ||
+                        req.user._id.toString() === isPostExist.userId.toString()
+                    ) return true;
                 }
             }
             throw new APIError("Post not found", 404);
