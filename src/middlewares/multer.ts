@@ -19,4 +19,4 @@ const fileFilter = (req: Request, file: any, cb: any) => {
 
 export const upload = multer({ fileFilter, storage });
 export const uploadSingleImage = (fileName: string) => upload.single(fileName);
-export const uploadMultiImages = (fileName: string) => upload.array(fileName);
+export const uploadMedias = (fileName: string) => upload.array(fileName);
