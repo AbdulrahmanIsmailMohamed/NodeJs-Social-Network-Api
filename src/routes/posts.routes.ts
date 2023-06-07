@@ -7,6 +7,7 @@ import {
     deletePostValidator,
     updatePostValidator
 } from "../utils/validator/posts.validator";
+import { uploadMultiImages } from "../middlewares/multer";
 
 const router: Router = Router({ mergeParams: true });
 const postController = new PostController()
@@ -17,7 +18,7 @@ router.get("/me", postController.getLoggedUserPosts)
 
 router
     .route("/")
-    .post(createPostValidator, postController.createPost)
+    .post(createPostValidator, uploadMultiImages("images"), postController.createPost)
     .get(postController.getFrinedsPosts)
 
 router.get("/friend", postController.getUserPosts)

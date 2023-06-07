@@ -6,6 +6,7 @@ import APIError from "../utils/apiError";
 import { AuthenticatedRequest } from "interfaces/authentication.interface";
 import { GetUser, UpdateLoggedUser } from "../interfaces/user.Interface";
 import { Features, GetAPIFeaturesResult } from "../interfaces/post.interface";
+import cloudinary from '../config/coludinaryConfig';
 
 class UserController {
     private userService: UserService;
@@ -19,9 +20,9 @@ class UserController {
                 userId: req.user._id as string,
                 name: req.body.name,
                 address: req.body.address,
-                number: req.body.number
+                number: req.body.number,
+                imagePath: req.file?.path
             }
-
             const user: GetUser = await this.userService.updateLoggedUser(userBody);
             if (!user) return next(new APIError("The User Can't Be Updated!", 400));
             res.status(200).json({ status: "Success", user });

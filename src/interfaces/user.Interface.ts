@@ -1,3 +1,5 @@
+import { Document } from "mongoose"
+
 export interface IUser {
     name: string,
     number: string,
@@ -10,6 +12,7 @@ export interface IUser {
     address?: string,
     friends?: Array<object>,
     profileImage?: string,
+    profileImages?: Array<string>,
     myFriendshipRequests?: Array<object>,
     friendshipRequests?: Array<object>,
     active?: boolean
@@ -20,8 +23,10 @@ export interface UpdateLoggedUser {
     name: string,
     address: string,
     number: string,
+    imagePath?: string | undefined
 }
 
-export interface GetUser extends UpdateLoggedUser {
+export interface GetUser extends UpdateLoggedUser, Document {
     profileImage: string,
+    profileImages: Array<string>,
 } 

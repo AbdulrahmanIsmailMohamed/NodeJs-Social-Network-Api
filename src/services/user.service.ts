@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongoose';
+import { UploadApiResponse } from "cloudinary";
 
 import { GetUser, IUser, UpdateLoggedUser } from "../interfaces/user.Interface";
 import User from "../models/User";
@@ -6,20 +6,43 @@ import { errorHandling } from "../utils/errorHandling";
 import { APIFeature } from '../utils/apiFeature';
 import APIError from '../utils/apiError';
 import { Features, GetAPIFeaturesResult } from '../interfaces/post.interface';
+import cloudinary from '../config/coludinaryConfig';
 
 class UserService {
     updateLoggedUser = async (userBody: UpdateLoggedUser): Promise<GetUser> => {
-        const { name, address, number, userId } = userBody;
+        const { name, address, number, userId, imagePath } = userBody;
 
         const user = await errorHandling(
             User.findOneAndUpdate(
                 { _id: userId, active: true },
-                { name, address, number },
+                {
+                    name,
+                    address,
+                    number,
+                },
                 { new: true }
-            ).select("name profileImage address")
+            ).select("name profileImage profileImages address")
         ) as GetUser;
+
+        if (imagePath) {
+            const result = await (await errorHandling(
+                cloudinary.uploader.upload(
+                    imagePath,
+                    {
+                        folder: "uploads/profileImages",
+                        format: "jpg",
+                        public_id: `${Date.now()}-profile`
+                    }
+                )
+            ) as Promise<UploadApiResponse>);
+            if (!result) throw new APIError("Internal Server Error", 500);
+            user.profileImage = result.url
+            user.profileImages.push(result.url)
+            await user.save();
+        }
+
         if (!user) throw new APIError("Can't update your data", 400);
-        return user
+        return user;
     }
 
     inActiveLoggedUser = async (userId: string): Promise<string> => {
@@ -50,7 +73,7 @@ class UserService {
             User.findOne({ _id: userId, active: true })
                 .select("name profileImage address")
         ) as GetUser;
-        
+
         if (!user) throw new APIError("can't find this user", 404);
         return user;
     }

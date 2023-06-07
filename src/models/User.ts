@@ -27,8 +27,9 @@ const userSchema = new Schema<IUser>(
         },
         profileImage: {
             type: String,
-            default: "image.jpeg"
+            default: "https://res.cloudinary.com/dqm9gatsb/image/upload/v1686079717/uploads/profileImages/profiledefault_qecqpj.png"
         },
+        profileImages: { type: Array },
         friends: [{
             type: Schema.Types.ObjectId,
             ref: "User",
@@ -37,7 +38,7 @@ const userSchema = new Schema<IUser>(
         friendshipRequests: [{
             type: Schema.Types.ObjectId,
             ref: "User",
-            maxlength:5000
+            maxlength: 5000
         }],
         myFriendshipRequests: [{
             type: Schema.Types.ObjectId,
@@ -65,7 +66,7 @@ const userSchema = new Schema<IUser>(
 );
 
 userSchema.pre("save", function (next) {
-    if (this.isNew || this.isModified(this.password)) {
+    if (this.isNew || !this.isModified(this.password)) {
         this.password = bcrypt.hashSync(this.password, 12);
     }
     next();

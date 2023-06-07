@@ -12,6 +12,7 @@ import {
     PostSanitize,
     UpdatePost
 } from "../interfaces/post.interface";
+import { Multer } from "multer";
 
 export class PostController {
     private postService: PostService;
@@ -20,14 +21,19 @@ export class PostController {
     }
 
     createPost = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        if (req.user) req.body.userId = req.user._id;
+        if (req.user) {
+            const postBody: CreatePost = {
+                userId: req.user._id as string,
+                post: req.body.post,
+                postType: req.body.postType,
+            };
+            const imagePath = req.files;
+
+            const result: PostSanitize = await this.postService.createPost(postBody, imagePath);
+            if (!result) return next(new APIError("Can't create post", 400));
+            res.status(201).json({ status: "Success", post: result })
+        }
         else next(new APIError("Please login", 401));
-
-        const postBody: CreatePost = req.body;
-        const result: PostSanitize = await this.postService.createPost(postBody);
-        if (!result) return next(new APIError("Can't create post", 400));
-
-        res.status(201).json({ status: "Success", post: result })
     });
 
     updatePost = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

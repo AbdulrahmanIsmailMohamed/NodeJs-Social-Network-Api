@@ -1,10 +1,12 @@
+import { UploadApiResponse } from "cloudinary";
+
 import APIError from "../utils/apiError";
 import Post from "../models/Post"
 import { errorHandling } from "../utils/errorHandling"
 import SenitizeData from "../utils/sanitizeData";
 import { APIFeature } from "../utils/apiFeature";
 import User from '../models/User';
-import { ObjectId } from 'mongoose';
+import cloudinary from '../config/coludinaryConfig';
 
 import {
     CreatePost,
@@ -21,7 +23,27 @@ export class PostService {
         this.senitizeData = new SenitizeData()
     }
 
-    createPost = async (postBody: CreatePost): Promise<PostSanitize> => {
+    createPost = async (postBody: CreatePost, imagePath?: any): Promise<PostSanitize> => {
+        const { images } = postBody;
+
+        if (images) {
+            const imageUrl: any = [];
+            imagePath.forEach(async (image: any) => {
+                const result = await (await errorHandling(
+                    cloudinary.uploader.upload(
+                        image,
+                        {
+                            folder: "uploads/posts",
+                            format: "jpg",
+                            public_id: `${Date.now()}-posts`
+                        }
+                    )
+                ) as Promise<UploadApiResponse>);
+                imageUrl.push(result.url);
+            });
+            postBody.images = imageUrl;
+        }
+
         const newPost = await errorHandling(Post.create(postBody)) as PostSanitize;
         if (!newPost) throw new APIError("Can't create post", 400);
         return this.senitizeData.post(newPost);
