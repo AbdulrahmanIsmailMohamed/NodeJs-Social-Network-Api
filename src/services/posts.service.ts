@@ -23,25 +23,33 @@ export class PostService {
         this.senitizeData = new SenitizeData()
     }
 
-    createPost = async (postBody: CreatePost, imagePath?: any): Promise<PostSanitize> => {
-        const { images } = postBody;
+    createPost = async (postBody: CreatePost, mediaPath?: any): Promise<PostSanitize> => {
+        if (mediaPath) {
+            const mediaUrl: any = [];
+            let format: string = "";
 
-        if (images) {
-            const imageUrl: any = [];
-            imagePath.forEach(async (image: any) => {
-                const result = await (await errorHandling(
-                    cloudinary.uploader.upload(
-                        image,
-                        {
-                            folder: "uploads/posts",
-                            format: "jpg",
-                            public_id: `${Date.now()}-posts`
-                        }
-                    )
-                ) as Promise<UploadApiResponse>);
-                imageUrl.push(result.url);
-            });
-            postBody.images = imageUrl;
+            for (const media of mediaPath) {
+                if (media.mimetype.startsWith('image')) {
+                    format = 'jpg'; // Set the format to 'jpg' for image uploads
+                } else if (media.mimetype.startsWith('video')) {
+                    format = 'mp4'; // Set the format to 'mp4' for video uploads
+
+                } else if (media.mimetype.startsWith('application/pdf')) {
+                    format = 'pdf'; // Set the format to 'mp4' for video uploads
+                }
+
+                const result = await errorHandling(
+                    cloudinary.uploader.upload(media.path, {
+                        folder: "uploads/posts",
+                        format,
+                        public_id: `${Date.now()}-posts`,
+                        resource_type: format === 'mp4' ? 'video' : 'image',
+                    })
+                ) as UploadApiResponse;
+                mediaUrl.push(result.url);
+            }
+
+            postBody.media = mediaUrl;
         }
 
         const newPost = await errorHandling(Post.create(postBody)) as PostSanitize;

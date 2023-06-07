@@ -20,7 +20,7 @@ const postShema = new Schema<IPost>(
             default: "friends",
             enum: ["friends", "public", "private"]
         },
-        images: { type: Array },
+        media: { type: Array },
         fans: [{
             type: Schema.Types.ObjectId,
             ref: "User"

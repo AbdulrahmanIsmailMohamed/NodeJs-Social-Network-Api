@@ -27,9 +27,9 @@ export class PostController {
                 post: req.body.post,
                 postType: req.body.postType,
             };
-            const imagePath = req.files;
+            const mediaPath = req.files;
 
-            const result: PostSanitize = await this.postService.createPost(postBody, imagePath);
+            const result: PostSanitize = await this.postService.createPost(postBody, mediaPath);
             if (!result) return next(new APIError("Can't create post", 400));
             res.status(201).json({ status: "Success", post: result })
         }

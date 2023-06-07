@@ -27,7 +27,7 @@ class SanitizeData {
             userId: post.userId,
             post: post.post,
             postType: post.postType,
-            images: post.images,
+            medias: post.media,
             likes: post.likes,
             share: post.share
         }

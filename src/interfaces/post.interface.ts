@@ -5,7 +5,7 @@ export interface IPost {
     userId: ObjectId,
     post: string,
     postType: string,
-    images?: string,
+    media?: string,
     likes?: number[],
     fans?: string[],
     share?: number[],
@@ -15,7 +15,7 @@ export interface CreatePost {
     post: string,
     postType: string,
     userId: string,
-    images?: Array<string>
+    media?: Array<string>
 }
 
 export interface UpdatePost extends CreatePost {

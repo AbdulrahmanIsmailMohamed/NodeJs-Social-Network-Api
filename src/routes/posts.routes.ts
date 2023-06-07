@@ -18,7 +18,7 @@ router.get("/me", postController.getLoggedUserPosts)
 
 router
     .route("/")
-    .post(createPostValidator, uploadMultiImages("images"), postController.createPost)
+    .post(uploadMultiImages("media"), postController.createPost)
     .get(postController.getFrinedsPosts)
 
 router.get("/friend", postController.getUserPosts)
