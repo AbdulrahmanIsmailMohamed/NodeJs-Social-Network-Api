@@ -106,11 +106,11 @@ export const deleteReplyValidator = [
             const isReplyExist = await errorHandling(
                 Comment.exists({
                     _id: req.params ? req.params.commentId : "",
-                    reply: { $elemMatch: { _id: val } }
+                    reply: { $elemMatch: { _id: val, userId: req.user._id } }
                 })
             )
             if (isReplyExist) return true;
-            throw new APIError("Can't find reply for this comment", 404)
+            throw new APIError("You not allow to delete this comment", 400)
         }),
     validatorMW
 ];

@@ -19,7 +19,8 @@ export interface ReplySanitize {
 
 export interface DeleteReply {
     commentId: string,
-    replyId: string
+    replyId: string,
+    userId: string
 }
 
 export interface ReplyValidator {

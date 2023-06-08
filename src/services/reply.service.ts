@@ -22,18 +22,21 @@ export class ReplyService {
         const replys = await errorHandling(
             Comment.findById(commentId)
                 .select("reply")
-                .populate("userId", "name profileImage")
-        ) as ReplySanitize;
+                .populate("userId", "name profileImage").exec()
+        )as ReplySanitize;
         if (!replys) throw new APIError("Can't find replys", 404);
         return replys
     }
 
     deleteReply = async (replyData: DeleteReply): Promise<ReplySanitize> => {
-        const { commentId, replyId } = replyData;
+        const { commentId, replyId, userId } = replyData;
 
         const reply = await errorHandling(
             Comment.findOneAndUpdate(
-                { _id: commentId },
+                {
+                    _id: commentId,
+                    reply: { $elemMatch: { userId } }
+                },
                 {
                     $pull: { reply: { _id: replyId } }
                 },
