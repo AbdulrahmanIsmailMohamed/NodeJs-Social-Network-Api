@@ -19,9 +19,10 @@ export class CommentController {
                 userId: req.user._id as string,
                 postId: req.params.postId as string,
                 comment: req.body.comment,
-                image: req.body.image
             }
-            const comment: CommentSanitize = await this.commentService.createComment(commentBody);
+            const imagePath: string | undefined = req.file?.path
+
+            const comment: CommentSanitize = await this.commentService.createComment(commentBody, imagePath);
             if (!comment) return next(new APIError("Can't create comment", 400));
             res.status(201).json({ status: "Success", comment });
         }
@@ -52,7 +53,7 @@ export class CommentController {
                 commentId: req.params.id,
                 userId: req.user._id as string
             }
-            const comment:string = await this.commentService.deleteComment(commentData);
+            const comment: string = await this.commentService.deleteComment(commentData);
             if (!comment) return next(new APIError("can't delete comment", 400));
             res.status(204).json({ status: "Success", message: comment })
         }
@@ -67,7 +68,7 @@ export class CommentController {
             postId: req.params.postId
         };
 
-        const comments:GetAPIFeaturesResult = await this.commentService.getPostComments(features);
+        const comments: GetAPIFeaturesResult = await this.commentService.getPostComments(features);
         if (!comments) return next(new APIError("can't find comments", 404));
         const { paginationResult, data } = comments;
         res.status(200).json({
@@ -80,7 +81,7 @@ export class CommentController {
     getComment = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const commentId = req.params.id
 
-        const comment:CommentSanitize = await this.commentService.getComment(commentId);
+        const comment: CommentSanitize = await this.commentService.getComment(commentId);
         if (!comment) return next(new APIError("can't find comment", 404));
         res.status(200).json({ status: "Success", comment });
     });

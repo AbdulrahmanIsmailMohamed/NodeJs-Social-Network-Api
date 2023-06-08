@@ -1,9 +1,13 @@
+import { UploadApiResponse } from "cloudinary";
+
 import APIError from "../utils/apiError";
 import { Comment } from "../models/Comments"
 import { errorHandling } from "../utils/errorHandling"
 import SenitizeData from '../utils/sanitizeData';
 import { APIFeature } from "../utils/apiFeature";
 import { Features } from "../interfaces/post.interface";
+import cloudinary from '../config/coludinaryConfig';
+
 import {
     CommentSanitize,
     CreateComment,
@@ -18,7 +22,23 @@ export class CommentService {
         this.senitizeData = new SenitizeData();
     }
 
-    createComment = async (commentBody: CreateComment): Promise<CommentSanitize> => {
+    createComment = async (commentBody: CreateComment, imagePath: string | undefined): Promise<CommentSanitize> => {
+        if (imagePath) {
+            const result = await (await errorHandling(
+                cloudinary.uploader.upload(
+                    imagePath,
+                    {
+                        folder: "uploads/comments",
+                        format: "jpg",
+                        public_id: `${Date.now()}-comment`
+                    }
+                )
+            ) as Promise<UploadApiResponse>);
+
+            if (!result) throw new APIError("Internal Server Error", 500);
+            commentBody.image = result.url;
+        }
+
         const comment = await errorHandling(
             (await Comment.create(commentBody))
                 .populate("userId", "name imageProfile")
@@ -86,7 +106,7 @@ export class CommentService {
         const comment = await errorHandling(
             Comment.findById(commentId).populate("userId", "name profileImage")
         ) as CommentSanitize;
-        
+
         if (!comment) throw new APIError("can't find comment", 404);
         return this.senitizeData.comments(comment)
     }

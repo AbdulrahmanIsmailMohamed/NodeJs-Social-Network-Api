@@ -24,10 +24,7 @@ const commentSchema = new Schema<IComment>(
             type: Number,
             default: 0
         },
-        image: {
-            type: String,
-            default: "image.jpeg"
-        },
+        image: { type: String },
         reply: [{
             userId: {
                 type: Schema.Types.ObjectId,
@@ -44,10 +41,7 @@ const commentSchema = new Schema<IComment>(
                 type: Number,
                 default: 0
             },
-            image: {
-                type: String,
-                default: "image.jpeg"
-            },
+            image: { type: String }
         }]
     },
     { timestamps: true }

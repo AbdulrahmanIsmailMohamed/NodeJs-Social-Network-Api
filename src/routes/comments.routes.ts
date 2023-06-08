@@ -2,6 +2,8 @@ import { Router } from "express";
 
 import { protectRoute } from "../config/auth";
 import { CommentController } from "../controllers/comments.controller";
+import { uploadSingleImage } from "../middlewares/multer";
+
 import {
     createCommentValidator,
     deleteCommentValidator,
@@ -19,7 +21,7 @@ router.get("/get/:postId", getPostCommentsValidator, commentController.getPostCo
 
 router
     .route("/:postId")
-    .post(createCommentValidator, commentController.createComment)
+    .post(uploadSingleImage("image"), createCommentValidator, commentController.createComment)
 
 router
     .route("/:id")

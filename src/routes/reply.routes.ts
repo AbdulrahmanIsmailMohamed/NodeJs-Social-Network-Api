@@ -2,6 +2,8 @@ import { Router } from "express";
 
 import { ReplyController } from '../controllers/reply.controller';
 import { protectRoute } from '../config/auth';
+import { uploadSingleImage } from "../middlewares/multer";
+
 import {
     createReplyValidator,
     deleteReplyValidator,
@@ -15,7 +17,7 @@ router.use(protectRoute)
 
 router
     .route("/:commentId")
-    .post(createReplyValidator, replyController.createReply)
+    .post(uploadSingleImage("image"), createReplyValidator, replyController.createReply)
     .get(getReplysValidator, replyController.getReplys);
 
 router.delete("/:commentId/:replyId", deleteReplyValidator, replyController.deleteReply);

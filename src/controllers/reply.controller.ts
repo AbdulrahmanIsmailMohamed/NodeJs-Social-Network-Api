@@ -19,10 +19,11 @@ export class ReplyController {
                 replyBody: {
                     userId: req.user._id as string,
                     comment: req.body.comment,
-                    image: req.body.image
                 }
             }
-            const reply: ReplySanitize = await this.replyService.createReply(replyData);
+            const imagePath: string | undefined = req.file?.path;
+
+            const reply: ReplySanitize = await this.replyService.createReply(replyData, imagePath);
             if (!reply) return next(new APIError("Can't create reply", 400));
             res.status(201).json({ status: "Success", reply });
         }
