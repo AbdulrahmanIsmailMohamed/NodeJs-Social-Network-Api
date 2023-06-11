@@ -15,6 +15,7 @@ export interface IUser {
     profileImages?: Array<string>,
     myFriendshipRequests?: Array<object>,
     friendshipRequests?: Array<object>,
+    favourites?: Array<Object>
     active?: boolean
 }
 

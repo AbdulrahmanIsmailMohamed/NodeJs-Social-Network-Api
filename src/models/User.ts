@@ -57,6 +57,10 @@ const userSchema = new Schema<IUser>(
             type: Boolean,
             default: true
         },
+        favourites: [{
+            type: Schema.Types.ObjectId,
+            ref: "Post"
+        }],
         isAdmin: {
             type: Boolean,
             default: false
