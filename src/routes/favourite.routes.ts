@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { FavouriteController } from '../controllers/favourite.controller';
 import { protectRoute } from "../config/auth";
+import { addFavouriteValidator } from '../utils/validator/favourite.validator';
 
 const router: Router = Router();
 const favouriteController = new FavouriteController();
@@ -11,7 +12,7 @@ router.get("/", favouriteController.favourites);
 
 router
     .route("/:postId")
-    .post(favouriteController.addFavourite)
+    .post(addFavouriteValidator, favouriteController.addFavourite)
     .delete(favouriteController.deleteFavourite);
 
 export default router;

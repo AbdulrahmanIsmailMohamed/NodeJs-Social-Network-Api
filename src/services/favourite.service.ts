@@ -34,7 +34,16 @@ export class FavouriteService {
 
     favourites = async (userId: string) => {
         const favourites = await errorHandling(
-            User.findById(userId).select("name profileImage favourites")
+            User.findById(userId)
+                .select("name profileImage favourites")
+                .populate({
+                    path: "favourites",
+                    select: "post",
+                    populate: {
+                        path: "userId",
+                        select: "name profileImage"
+                    }
+                })
         ) as FavouritesSanitize;
         if (!favourites) throw new APIError("Your Data not exist", 404);
         return favourites;
