@@ -7,6 +7,7 @@ import posts from "./posts.routes";
 import comments from "./comments.routes";
 import replys from "./reply.routes";
 import favourites from "./favourite.routes";
+import likes from "./likes.routes";
 
 const router = Router();
 
@@ -17,6 +18,7 @@ router
     .use(`/posts`, posts)
     .use(`/comments`, comments)
     .use(`/replys`, replys)
-    .use(`/favourites`, favourites);
+    .use(`/favourites`, favourites)
+    .use(`/likes`, likes);
 
 export default router;

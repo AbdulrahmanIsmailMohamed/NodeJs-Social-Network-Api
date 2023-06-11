@@ -4,7 +4,7 @@ import User from '../models/User';
 import APIError from '../utils/apiError';
 
 export class FavouriteService {
-    addFavourite = async (favouriteData: FavouriteData) => {
+    addFavourite = async (favouriteData: FavouriteData): Promise<FavouritesSanitize> => {
         const { postId, userId } = favouriteData;
 
         const addFavourite = await errorHandling(
@@ -18,7 +18,7 @@ export class FavouriteService {
         return addFavourite
     }
 
-    deleteFavourite = async (favouriteData: FavouriteData) => {
+    deleteFavourite = async (favouriteData: FavouriteData): Promise<FavouritesSanitize> => {
         const { postId, userId } = favouriteData;
 
         const deleteFavourite = await errorHandling(
@@ -32,7 +32,7 @@ export class FavouriteService {
         return deleteFavourite
     }
 
-    favourites = async (userId: string) => {
+    favourites = async (userId: string): Promise<FavouritesSanitize> => {
         const favourites = await errorHandling(
             User.findById(userId)
                 .select("name profileImage favourites")
