@@ -1,22 +1,26 @@
-import { Document, ObjectId } from "mongoose"
+import { Document } from "mongoose"
 
 export interface IUser {
     name: string,
     number: string,
     email: string,
     password: string,
+    numberOfFollowers: number,
     _id?: string
     isAdmin?: boolean,
     limitFriends?: number,
     limitFriendshipRequest?: number,
     address?: string,
-    friends?: Array<ObjectId>,
+    friends?: Array<string>,
+    followers?: Array<string>,
+    followUsers?: Array<string>,
+    unFollowUsers?: Array<string>,
     profileImage?: string,
     profileImages?: Array<string>,
-    myFriendshipRequests?: Array<ObjectId>,
-    friendshipRequests?: Array<ObjectId>,
+    myFriendshipRequests?: Array<string>,
+    friendshipRequests?: Array<string>,
     favourites?: Array<Object>
-    hideUserPosts?: Array<ObjectId>
+    hideUserPosts?: Array<string>
     active?: boolean
 }
 

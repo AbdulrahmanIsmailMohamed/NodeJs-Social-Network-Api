@@ -65,6 +65,22 @@ const userSchema = new Schema<IUser>(
             type: Schema.Types.ObjectId,
             ref: "User"
         }],
+        followUsers: [{
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        }],
+        numberOfFollowers: {
+            type: Number,
+            default: 0
+        },
+        unFollowUsers: [{
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        }],
+        followers: [{
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        }],
         isAdmin: {
             type: Boolean,
             default: false
