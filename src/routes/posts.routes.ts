@@ -25,6 +25,7 @@ router.get("/friend", postController.getUserPosts)
 
 router
     .route("/:id")
+    .post(postController.hideUserPosts)
     .patch(updatePostValidator, postController.updatePost)
     .delete(deletePostValidator, postController.deletePost)
 

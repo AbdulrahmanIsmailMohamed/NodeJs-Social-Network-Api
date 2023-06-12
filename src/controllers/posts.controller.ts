@@ -108,6 +108,18 @@ export class PostController {
         else return next(new APIError("Please login", 401));
     });
 
+    hideUserPosts = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        if (req.user) {
+            const userId = req.user._id as string;
+            const postId: string = req.params.id;
+
+            const user: string = await this.postService.hideUserPosts(postId, userId);
+            if (!user) return next(new APIError("Occur Error!!", 400));
+            res.status(200).json({ status: "Success", message: user });
+        }
+        else next(new APIError("Please login", 401));
+    });
+
     getFrinedsPosts = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         if (req.user) {
             const features: Features = {

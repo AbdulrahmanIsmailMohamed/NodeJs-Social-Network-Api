@@ -16,6 +16,7 @@ import {
     UpdatePost,
     GetAPIFeaturesResult,
 } from '../interfaces/post.interface';
+import { IUser } from "../interfaces/user.Interface";
 
 export class PostService {
     private senitizeData: SenitizeData;
@@ -122,11 +123,42 @@ export class PostService {
         return result;
     }
 
+    hideUserPosts = async (postId: string, userId: string) => {
+        const post = await errorHandling(Post.findById(postId).select("userId")) as PostSanitize;
+        if (!post) throw new APIError("Can't find post!", 404);
+
+        // add userId to hideUserPosts Array
+        const user = await errorHandling(
+            User.findByIdAndUpdate(
+                userId,
+                { $addToSet: { hideUserPosts: post.userId } },
+                { new: true }
+            ).select("hideUserPosts")
+        ) as IUser;
+        if (!user) throw new APIError("Can't find User!", 404);
+
+        // after 1 month userId will delete from hideUserPosts
+        const thirtyDaysInMilliseconds = 24 * 60 * 60 * 1000;
+        setTimeout(async () => {
+            const user = await errorHandling(
+                User.findByIdAndUpdate(
+                    userId,
+                    { $pull: { hideUserPosts: post.userId } },
+                    { new: true }
+                ).select("hideUserPosts")
+            ) as IUser;
+            if (!user) throw new APIError("Occur Error!!", 400);
+            return "Done"
+        }, thirtyDaysInMilliseconds);
+
+        return "Done"
+    }
+
     getFriendsPosts = async (features: Features): Promise<GetAPIFeaturesResult> => {
         const { userId } = features;
 
         const user = await errorHandling(
-            User.findById(userId)
+            User.findOne({ _id: userId })
                 .populate({
                     path: "friends",
                     match: { active: { $eq: true } }
@@ -135,11 +167,14 @@ export class PostService {
         if (!user) throw new APIError(`Not Found User for this id: ${userId}`, 404);
 
         const query = {
-            userId: { $in: user.friends },
+            userId: {
+                $in: user.friends,
+                $nin: user.hideUserPosts
+            },
             $or: [
                 { postType: "public" },
                 { postType: "friends" }
-            ],
+            ]
         }
 
         const countPosts = await errorHandling(Post.countDocuments(query)) as number;

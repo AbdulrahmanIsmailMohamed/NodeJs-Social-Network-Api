@@ -61,6 +61,10 @@ const userSchema = new Schema<IUser>(
             type: Schema.Types.ObjectId,
             ref: "Post"
         }],
+        hideUserPosts: [{
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        }],
         isAdmin: {
             type: Boolean,
             default: false

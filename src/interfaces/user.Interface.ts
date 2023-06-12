@@ -1,4 +1,4 @@
-import { Document } from "mongoose"
+import { Document, ObjectId } from "mongoose"
 
 export interface IUser {
     name: string,
@@ -10,12 +10,13 @@ export interface IUser {
     limitFriends?: number,
     limitFriendshipRequest?: number,
     address?: string,
-    friends?: Array<object>,
+    friends?: Array<ObjectId>,
     profileImage?: string,
     profileImages?: Array<string>,
-    myFriendshipRequests?: Array<object>,
-    friendshipRequests?: Array<object>,
+    myFriendshipRequests?: Array<ObjectId>,
+    friendshipRequests?: Array<ObjectId>,
     favourites?: Array<Object>
+    hideUserPosts?: Array<ObjectId>
     active?: boolean
 }
 
