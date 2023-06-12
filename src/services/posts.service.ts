@@ -123,7 +123,7 @@ export class PostService {
         return result;
     }
 
-    hideUserPosts = async (postId: string, userId: string) => {
+    hideUserPosts = async (postId: string, userId: string): Promise<string> => {
         const post = await errorHandling(Post.findById(postId).select("userId")) as PostSanitize;
         if (!post) throw new APIError("Can't find post!", 404);
 

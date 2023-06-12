@@ -5,6 +5,7 @@ import { protectRoute } from "../config/auth";
 import {
     createPostValidator,
     deletePostValidator,
+    hideUserPostsValidator,
     updatePostValidator
 } from "../utils/validator/posts.validator";
 import { uploadMedias } from "../middlewares/multer";
@@ -25,7 +26,7 @@ router.get("/friend", postController.getUserPosts)
 
 router
     .route("/:id")
-    .post(postController.hideUserPosts)
+    .post(hideUserPostsValidator, postController.hideUserPosts)
     .patch(updatePostValidator, postController.updatePost)
     .delete(deletePostValidator, postController.deletePost)
 
