@@ -6,6 +6,7 @@ import { validatorMW } from '../../middlewares/validatorMW';
 import { Comment } from '../../models/Comments';
 import { CommentSanitize } from '../../interfaces/comments.interface';
 import { PostSanitize } from '../../interfaces/post.interface';
+import { UserId } from "../../interfaces/user.Interface";
 
 export const createCommentValidator = [
     check("postId")
@@ -17,9 +18,11 @@ export const createCommentValidator = [
             ) as PostSanitize;
 
             if (isPostExist) {
-                const userId = isPostExist.userId as unknown as { _id: string; friends: string[] }
+                const userId = isPostExist.userId as unknown as UserId
 
-                if (
+                if (userId.active === false) throw new APIError("Post Not Exist", 404);
+
+                else if (
                     isPostExist.postType === "private" &&
                     userId._id === req.user._id.toString() ||
                     isPostExist.postType === "public"
@@ -140,7 +143,7 @@ export const getPostCommentsValidator = [
             ) as PostSanitize;
             if (isPostExist) {
                 if (isPostExist.postType === "public") return true;
-                else if (isPostExist.postType === "friends") {                    
+                else if (isPostExist.postType === "friends") {
                     if (
                         req.user.friends.includes(isPostExist.userId) ||
                         req.user._id.toString() === isPostExist.userId.toString()

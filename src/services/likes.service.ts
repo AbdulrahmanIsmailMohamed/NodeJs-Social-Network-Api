@@ -8,7 +8,6 @@ export class LikesService {
         const { postId, userId } = likeData;
 
         const isUserAddedALike = await errorHandling(Post.exists({ fans: userId }));
-        console.log(isUserAddedALike);
 
         let updateQuery;
         if (!isUserAddedALike) {
@@ -35,7 +34,13 @@ export class LikesService {
 
     getFans = async (postId: string) => {
         const fans = await errorHandling(
-            Post.findById(postId).select("fans likes")
-        )
+            Post.findById(postId)
+                .select("fans likes")
+                .populate("fans", "name profileImage")
+        ) as LikesSanitize;
+
+        if (!fans) throw new APIError("Can't find post", 404);
+        return fans
     }
+
 }

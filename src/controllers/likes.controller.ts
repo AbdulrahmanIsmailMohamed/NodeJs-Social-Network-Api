@@ -22,5 +22,14 @@ export class LikesController {
             if (!addLike) return next(new APIError("Can't add your like", 400));
             res.json({ status: "Success", Fans: addLike });
         }
-    })
+    });
+
+    getFans = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        const postId = req.params.postId as string;
+
+        const fans = await this.likesService.getFans(postId);
+        if (!fans) return next(new APIError("Can't find post", 404));
+        res.status(200).json(fans);
+    });
+
 }

@@ -30,4 +30,6 @@ export interface UpdateLoggedUser {
 export interface GetUser extends UpdateLoggedUser, Document {
     profileImage: string,
     profileImages: Array<string>,
-} 
+}
+
+export interface UserId { _id: string; active: boolean; friends: string[] }
