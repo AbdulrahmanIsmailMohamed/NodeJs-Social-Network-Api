@@ -154,7 +154,7 @@ export class PostService {
         return "Done"
     }
 
-    getFriendsPosts = async (features: Features): Promise<GetAPIFeaturesResult> => {
+    renderTimeline = async (features: Features): Promise<GetAPIFeaturesResult> => {
         const { userId } = features;
 
         const user = await errorHandling(
@@ -167,15 +167,31 @@ export class PostService {
         if (!user) throw new APIError(`Not Found User for this id: ${userId}`, 404);
 
         const query = {
-            userId: {
-                $in: user.friends,
-                $nin: user.hideUserPosts
-            },
             $or: [
-                { postType: "public" },
-                { postType: "friends" }
+                {
+                    $and: [
+                        { postType: "public" },
+                        {
+                            userId: {
+                                $in: [...user.friends, ...user.followUsers],
+                                $nin: user.hideUserPosts
+                            }
+                        }
+                    ]
+                },
+                {
+                    $and: [
+                        { postType: "friends" },
+                        {
+                            userId: {
+                                $in: user.friends,
+                                $nin: user.hideUserPosts
+                            }
+                        }
+                    ]
+                }
             ]
-        }
+        };
 
         const countPosts = await errorHandling(Post.countDocuments(query)) as number;
 
@@ -183,6 +199,6 @@ export class PostService {
             .pagination(countPosts);
 
         const result = await errorHandling(apiFeature.execute("posts")) as GetAPIFeaturesResult;
-        return result
+        return result;
     }
 }

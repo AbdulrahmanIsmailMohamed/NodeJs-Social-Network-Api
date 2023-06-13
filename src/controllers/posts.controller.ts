@@ -120,7 +120,7 @@ export class PostController {
         else next(new APIError("Please login", 401));
     });
 
-    getFrinedsPosts = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    renderTimeline = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         if (req.user) {
             const features: Features = {
                 limit: parseInt(req.query.limit as string) * 1 || 5,
@@ -128,7 +128,7 @@ export class PostController {
                 userId: req.user._id
             };
 
-            const result: GetAPIFeaturesResult = await this.postService.getFriendsPosts(features);
+            const result: GetAPIFeaturesResult = await this.postService.renderTimeline(features);
             if (!result) return next(new APIError("Can't find posts for this user", 404));
             const { paginationResult, data } = result;
 

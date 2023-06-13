@@ -20,7 +20,7 @@ router.get("/me", postController.getLoggedUserPosts)
 router
     .route("/")
     .post(uploadMedias("media"), createPostValidator, postController.createPost)
-    .get(postController.getFrinedsPosts)
+    .get(postController.renderTimeline)
 
 router.get("/friend", postController.getUserPosts)
 
