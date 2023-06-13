@@ -22,19 +22,18 @@ export class FollowersService {
                     filter: { _id: followUserId },
                     update: {
                         $addToSet: { followers: userId },
-                        // $setOnInsert: { numberOfFollowers: 0 },
                         $inc: { numberOfFollowers: +1 }
                     }
                 }
             },
-
         ];
 
         const result = await User.bulkWrite(operations as [], {});
         if (result.modifiedCount < 0) {
             throw new APIError("Can't Add user to your followers list!!", 400);
         }
-        return "The person has been added to your followers"
+
+        return "The person has been added to your followers";
     }
 
     unFollowUser = async (userId: string, followUserId: string): Promise<string> => {
@@ -53,25 +52,24 @@ export class FollowersService {
                     filter: { _id: followUserId },
                     update: {
                         $pull: { followers: userId },
-                        // $setOnInsert: { numberOfFollowers: 0 },
                         $inc: { numberOfFollowers: -1 }
                     }
                 }
             },
-
         ];
 
         const result = await User.bulkWrite(operations as [], {});
         if (result.modifiedCount < 0) {
             throw new APIError("Can't Delete user from your followers list!!", 400);
         }
-        return "The person has been deleted from your followers"
+        
+        return "The person has been deleted from your followers";
     }
 
     getFollowes = async (userId: string): Promise<IUser> => {
         const followUsers = await errorHandling(User.findById(userId).select("followers followUsers numberOfFollowers")) as IUser;
         if (!followUsers) throw new APIError("Can't find user", 404);
-        return followUsers
+        return followUsers;
     }
 
 }
