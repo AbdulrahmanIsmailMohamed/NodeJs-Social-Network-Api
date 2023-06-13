@@ -14,6 +14,7 @@ class AuthService {
 
     register = async (registerBody: RegisterBody): Promise<RegisterSanitize> => {
         const user = await errorHandling(User.create(registerBody)) as RegisterSanitize;
+        
         if (!user) throw new APIError("event error when you registerd", 400);
         return this.senitizeData.userRegister(user);
     }

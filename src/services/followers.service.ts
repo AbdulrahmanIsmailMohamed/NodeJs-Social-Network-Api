@@ -21,9 +21,10 @@ export class FollowersService {
                 updateOne: {
                     filter: { _id: followUserId },
                     update: {
-                        $addToSet: { followers: userId }
-                    },
-                    $inc: { numberOfFollowers: 1 }
+                        $addToSet: { followers: userId },
+                        // $setOnInsert: { numberOfFollowers: 0 },
+                        $inc: { numberOfFollowers: +1 }
+                    }
                 }
             },
 
@@ -51,9 +52,10 @@ export class FollowersService {
                 updateOne: {
                     filter: { _id: followUserId },
                     update: {
-                        $pull: { followers: userId }
-                    },
-                    $inc: { numberOfFollowers: -1 }
+                        $pull: { followers: userId },
+                        // $setOnInsert: { numberOfFollowers: 0 },
+                        $inc: { numberOfFollowers: -1 }
+                    }
                 }
             },
 
@@ -66,10 +68,10 @@ export class FollowersService {
         return "The person has been deleted from your followers"
     }
 
-    getFollowe = async (userId: string): Promise<IUser> => {
-        const followUsers = await errorHandling(User.findById(userId).select("followUsers")) as IUser;
+    getFollowes = async (userId: string): Promise<IUser> => {
+        const followUsers = await errorHandling(User.findById(userId).select("followers followUsers numberOfFollowers")) as IUser;
         if (!followUsers) throw new APIError("Can't find user", 404);
         return followUsers
     }
-    
+
 }

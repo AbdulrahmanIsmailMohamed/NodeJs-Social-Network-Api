@@ -5,7 +5,7 @@ export interface IUser {
     number: string,
     email: string,
     password: string,
-    numberOfFollowers: number,
+    numberOfFollowers?: number,
     _id?: string
     isAdmin?: boolean,
     limitFriends?: number,

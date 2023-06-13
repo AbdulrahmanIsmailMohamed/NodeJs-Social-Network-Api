@@ -20,7 +20,7 @@ class AuthController {
     register = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const registerBody: RegisterBody = {
             name: req.body.name,
-            email: req.body.name,
+            email: req.body.email,
             password: req.body.password,
             number: req.body.number
         };

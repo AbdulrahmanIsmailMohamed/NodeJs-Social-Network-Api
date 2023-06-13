@@ -4,7 +4,7 @@ import { protectRoute } from "../config/auth";
 import { addFavouriteValidator } from '../utils/validator/favourite.validator';
 
 const router: Router = Router();
-const favouriteController = new FavouriteController();
+const favouriteController: FavouriteController = new FavouriteController();
 
 router.use(protectRoute);
 
