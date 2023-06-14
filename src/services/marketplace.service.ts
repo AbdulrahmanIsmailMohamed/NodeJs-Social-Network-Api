@@ -16,13 +16,33 @@ export class MarketplaceService {
         let { images, site, userId } = itemForSaleBody;
 
         if (images) {
-            const mediaUrl: any = [];
+            // git longitude and latitude from site, if user not added his site we will get site by his Id
+            const geoLocation = await errorHandling(getLocationCoordinates(site)) as {
+                latitude: number | undefined;
+                longitude: number | undefined;
+            } | null;
+            itemForSaleBody.longitude = geoLocation?.longitude;
+            itemForSaleBody.latitude = geoLocation?.latitude;
+
+            if (!geoLocation) {
+                const user = await errorHandling(User.findById(userId)) as IUser;
+                const site = user.address as string;
+                if (!site) throw new APIError("Must add your address in your profile", 400);
+
+                const geoLocation = await errorHandling(getLocationCoordinates(site)) as {
+                    latitude: number | undefined;
+                    longitude: number | undefined;
+                } | null;
+                itemForSaleBody.longitude = geoLocation?.longitude;
+                itemForSaleBody.latitude = geoLocation?.latitude;
+            }
 
             // store image in cloudinaru and store url in db
+            const mediaUrl: any = [];
             for (const image of images) {
                 const result = await errorHandling(
                     cloudinary.uploader.upload(image.path, {
-                        folder: "uploads/posts",
+                        folder: "uploads/marketplace",
                         format: "jpg",
                         public_id: `${Date.now()}-marketplace`,
                     })
@@ -31,28 +51,6 @@ export class MarketplaceService {
                 mediaUrl.push(result.url);
             }
             itemForSaleBody.images = mediaUrl;
-
-            // git longitude and latitude from site, if user not added his site we will get site by his Id
-            const geoLocation = await errorHandling(getLocationCoordinates(site)) as {
-                latitude: number | undefined;
-                longitude: number | undefined;
-            } | null;
-            
-            itemForSaleBody.longitude = geoLocation?.longitude;
-            itemForSaleBody.latitude = geoLocation?.latitude;
-
-            if (!geoLocation) {
-                const user = await errorHandling(User.findById(userId)) as IUser;
-                const site = user.address as string;
-
-                const geoLocation = await errorHandling(getLocationCoordinates(site)) as {
-                    latitude: number | undefined;
-                    longitude: number | undefined;
-                } | null;
-
-                itemForSaleBody.longitude = geoLocation?.longitude;
-                itemForSaleBody.latitude = geoLocation?.latitude;
-            }
 
             const itemForSale = await errorHandling(Marketplace.create(itemForSaleBody)) as IMarketplace;
             if (!itemForSale) throw new APIError("Can't Create Your item", 400);

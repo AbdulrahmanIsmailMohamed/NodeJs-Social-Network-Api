@@ -24,9 +24,6 @@ const marketplaceSchema = new Schema<IMarketplace>(
             type: String,
             required: true,
         },
-        site: {
-            type: String,
-        },
         condition: {
             type: [String],
             required: true,
