@@ -16,12 +16,13 @@ export interface IMarketplace extends Document {
     address: string,
     price: number,
     category: string,
+    unAvailable: boolean,
     images: Array<string>,
     condition: Array<Condition>,
     availability: Array<Availability>,
     description: string,
-    longitude: number,
-    latitude: number,
+    longitude?: number,
+    latitude?: number,
     tradMark?: string,
 }
 
@@ -40,3 +41,7 @@ export interface ItemForSaleBody {
     latitude?: number | undefined
 }
 
+export interface UpdateItemForSaleBody extends Partial<ItemForSaleBody> {
+    itemForSaleId: string,
+    // unAvailable?: boolean
+}

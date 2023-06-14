@@ -34,6 +34,10 @@ const marketplaceSchema = new Schema<IMarketplace>(
                 "Used - In FairCondition"
             ]
         },
+        unAvailable: {
+            type: Boolean,
+            default: false
+        },
         availability: {
             type: [String],
             required: true,
