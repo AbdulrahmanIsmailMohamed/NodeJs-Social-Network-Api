@@ -27,7 +27,7 @@ export class PostController {
                 post: req.body.post,
                 postType: req.body.postType,
             };
-            const mediaPath = req.files;
+            const mediaPath = req.files as Array<Express.Multer.File>;
 
             const result: PostSanitize = await this.postService.createPost(postBody, mediaPath);
             if (!result) return next(new APIError("Can't create post", 400));

@@ -24,7 +24,7 @@ export class PostService {
         this.senitizeData = new SenitizeData()
     }
 
-    createPost = async (postBody: CreatePost, mediaPath?: any): Promise<PostSanitize> => {
+    createPost = async (postBody: CreatePost, mediaPath?: Array<Express.Multer.File>): Promise<PostSanitize> => {
         if (mediaPath) {
             const mediaUrl: any = [];
             let format: string = "";

@@ -9,6 +9,7 @@ import replys from "./reply.routes";
 import favourites from "./favourite.routes";
 import likes from "./likes.routes";
 import followers from "./followers.routes";
+import marketplaces from "./marketplace.routes";
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router
     .use(`/replys`, replys)
     .use(`/favourites`, favourites)
     .use(`/likes`, likes)
-    .use(`/followers`, followers);
+    .use(`/followers`, followers)
+    .use(`/marketplaces`, marketplaces);
 
 export default router;
