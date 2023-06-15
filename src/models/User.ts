@@ -17,6 +17,11 @@ const userSchema = new Schema<IUser>(
         address: {
             type: String,
         },
+        city: {
+            type: String,
+            lowercase: true,
+            trim: true
+        },
         password: {
             type: String,
             required: true

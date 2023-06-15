@@ -10,7 +10,7 @@ import cloudinary from '../config/coludinaryConfig';
 
 class UserService {
     updateLoggedUser = async (userBody: UpdateLoggedUser): Promise<GetUser> => {
-        const { name, address, number, userId, imagePath } = userBody;
+        const { name, address, number, userId, imagePath, city } = userBody;
 
         const user = await errorHandling(
             User.findOneAndUpdate(
@@ -19,6 +19,7 @@ class UserService {
                     name,
                     address,
                     number,
+                    city
                 },
                 { new: true }
             ).select("name profileImage profileImages address")

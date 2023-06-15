@@ -18,6 +18,7 @@ export interface IMarketplace extends Document {
     category: string,
     unAvailable: boolean,
     images: Array<string>,
+    site: string,
     condition: Array<Condition>,
     availability: Array<Availability>,
     description: string,

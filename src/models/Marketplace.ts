@@ -20,6 +20,12 @@ const marketplaceSchema = new Schema<IMarketplace>(
             type: Number,
             required: true,
         },
+        site: {
+            type: String,
+            required: true,
+            lowercase: true,
+            trim: true
+        },
         category: {
             type: String,
             required: true,

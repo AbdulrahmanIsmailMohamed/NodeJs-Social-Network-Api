@@ -5,6 +5,7 @@ export interface IUser {
     number: string,
     email: string,
     password: string,
+    city: string,
     numberOfFollowers?: number,
     _id?: string
     isAdmin?: boolean,
@@ -28,6 +29,7 @@ export interface UpdateLoggedUser {
     userId: string,
     name: string,
     address: string,
+    city: string,
     number: string,
     imagePath?: string | undefined
 }

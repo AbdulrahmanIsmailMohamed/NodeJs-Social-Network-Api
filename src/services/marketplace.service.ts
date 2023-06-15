@@ -8,7 +8,7 @@ import { IMarketplace, ItemForSaleBody, UpdateItemForSaleBody } from '../interfa
 import { getLocationCoordinates } from "../utils/geoLocation";
 import { Marketplace } from '../models/Marketplace';
 import User from '../models/User';
-import { IUser } from '../interfaces/user.Interface';
+import { GetUser, IUser } from '../interfaces/user.Interface';
 
 export class MarketplaceService {
 
@@ -35,6 +35,7 @@ export class MarketplaceService {
                 } | null;
                 itemForSaleBody.longitude = geoLocation?.longitude;
                 itemForSaleBody.latitude = geoLocation?.latitude;
+                itemForSaleBody.site = site;
             }
 
             // store image in cloudinaru and store url in db
@@ -103,6 +104,7 @@ export class MarketplaceService {
                 } | null;
                 updateItemForSaleBody.longitude = geoLocation?.longitude;
                 updateItemForSaleBody.latitude = geoLocation?.latitude;
+                updateItemForSaleBody.site = site;
             }
         }
 
@@ -126,6 +128,35 @@ export class MarketplaceService {
         ) as IMarketplace;
         if (!unAvailableItem) throw new APIError("your item not exist!", 404);
         return "Done"
+    }
+
+    deleteItem = async (itemForSaleId: string, userId: string): Promise<string> => {
+        const deleteItem = await errorHandling(Marketplace.findOneAndDelete({ _id: itemForSaleId, userId })) as IMarketplace;
+        if (!deleteItem) throw new APIError("your item not exist!", 404);
+        return "Done"
+    }
+
+    getItemsForSale = async (userId: string): Promise<IMarketplace> => {
+        const cityOfUser = await errorHandling(User.findOne({ _id: userId }).select("city")) as GetUser;
+        if (!cityOfUser.city) throw new APIError("Please Add your city to show items in your city or select show all items", 400);
+
+        let query = {
+            unAvailable: false,
+            $or: [
+                { site: cityOfUser.city },
+                { site: cityOfUser.address },
+            ]
+        }
+
+        const itemsForSale = await errorHandling(Marketplace.find(query)) as IMarketplace;
+        if (!itemsForSale) throw new APIError("Can't find items for sale", 404);
+        return itemsForSale
+    }
+
+    getLoggedUserItemsForSale = async (userId: string): Promise<IMarketplace> => {
+        const itemsForSale = await errorHandling(Marketplace.findOne({ userId })) as IMarketplace;
+        if (!itemsForSale) throw new APIError("Can't find items for sale", 404);
+        return itemsForSale
     }
 
 }

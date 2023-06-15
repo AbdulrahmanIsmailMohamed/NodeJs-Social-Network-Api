@@ -21,7 +21,8 @@ class UserController {
                 name: req.body.name,
                 address: req.body.address,
                 number: req.body.number,
-                imagePath: req.file?.path
+                imagePath: req.file?.path,
+                city: req.body.city
             }
             const user: GetUser = await this.userService.updateLoggedUser(userBody);
             if (!user) return next(new APIError("The User Can't Be Updated!", 400));

@@ -3,13 +3,13 @@ import { NextFunction, Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandlerMW";
 import APIError from "../utils/apiError";
 import { AuthenticatedRequest } from "../interfaces/authentication.interface";
-import { ItemForSaleBody, UpdateItemForSaleBody } from "../interfaces/marketplace.interface";
+import { IMarketplace, ItemForSaleBody, UpdateItemForSaleBody } from "../interfaces/marketplace.interface";
 import { MarketplaceService } from '../services/marketplace.service';
 
 export class MarketplaceControlloer {
     private marketplaceService: MarketplaceService;
     constructor() {
-        this.marketplaceService = new MarketplaceService()
+        this.marketplaceService = new MarketplaceService();
     }
 
     createItemForSale = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -61,11 +61,44 @@ export class MarketplaceControlloer {
         if (req.user) {
             const [itemForSaleId, userId] = [req.params.id, req.user._id as string];
 
-            const unAvailableItem = await this.marketplaceService.unAvailable(itemForSaleId, userId)
+            const unAvailableItem: string = await this.marketplaceService.unAvailable(itemForSaleId, userId)
             if (!unAvailableItem) return next(new APIError("Can't update item", 400));
+            res.status(200).json({ status: "Success", message: unAvailableItem })
         }
         else return next(new APIError("Please Login", 401));
     });
-    
+
+    deleteItem = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        if (req.user) {
+            const [itemForSaleId, userId] = [req.params.id, req.user._id as string];
+
+            const item: string = await this.marketplaceService.deleteItem(itemForSaleId, userId)
+            if (!item) return next(new APIError("Can't update item", 400));
+            res.status(204).json({ status: "Success", message: item })
+        }
+        else return next(new APIError("Please Login", 401));
+    });
+
+    getItemsForSale = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        if (req.user) {
+            const userId = req.user._id as string;
+
+            const itemsForSale: IMarketplace = await this.marketplaceService.getItemsForSale(userId)
+            if (!itemsForSale) return next(new APIError("Can't get items", 404));
+            res.status(200).json({ status: "Success", itemsForSale });
+        }
+        else return next(new APIError("Please Login", 401));
+    });
+
+    getLoggedUserItemsForSale = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        if (req.user) {
+            const userId = req.user._id as string;
+
+            const itemsForSale: IMarketplace = await this.marketplaceService.getLoggedUserItemsForSale(userId)
+            if (!itemsForSale) return next(new APIError("Can't get items", 404));
+            res.status(200).json({ status: "Success", itemsForSale });
+        }
+        else return next(new APIError("Please Login", 401));
+    });
 
 }
