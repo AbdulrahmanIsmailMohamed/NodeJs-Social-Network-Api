@@ -14,11 +14,16 @@ const marketplaceSchema = new Schema<IMarketplace>(
         },
         address: {
             type: String,
+            minlength: 5,
+            maxlength: 5,
             required: true,
         },
         price: {
             type: Number,
             required: true,
+        },
+        description: {
+            type: String
         },
         site: {
             type: String,
@@ -31,7 +36,7 @@ const marketplaceSchema = new Schema<IMarketplace>(
             required: true,
         },
         condition: {
-            type: [String],
+            type: String,
             required: true,
             enum: [
                 "New",

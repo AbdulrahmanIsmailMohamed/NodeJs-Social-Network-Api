@@ -1,12 +1,12 @@
 import { Document, ObjectId } from "mongoose"
 
-enum Condition {
+export enum Condition {
     "New",
     "Used - LikeNew",
     "Used - In GoodCondition",
     "Used - In FairCondition",
 }
-enum Availability {
+export enum Availability {
     "View As A Single Item",
     "view As Available",
 }
@@ -19,7 +19,7 @@ export interface IMarketplace extends Document {
     unAvailable: boolean,
     images: Array<string>,
     site: string,
-    condition: Array<Condition>,
+    condition: string,
     availability: Array<Availability>,
     description: string,
     longitude?: number,

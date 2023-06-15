@@ -3,24 +3,25 @@ import { Router } from "express";
 import { protectRoute } from "../config/auth";
 import { MarketplaceControlloer } from '../controllers/marketplace.controller';
 import { uploadMedias, uploadSingleImage } from "../middlewares/multer";
+import { createItemForSaleValidator, itemForSaleValidator, updateItemForSaleValidator } from '../utils/validator/marketplace.validator';
 
 const router: Router = Router();
 const marketplaceControlloer = new MarketplaceControlloer();
 
-// router.use(protectRoute);
+router.use(protectRoute);
 
 router
     .route("/")
-    .post(uploadMedias("images"), marketplaceControlloer.createItemForSale)
+    .post(uploadMedias("images"), createItemForSaleValidator, marketplaceControlloer.createItemForSale)
     .get(marketplaceControlloer.getItemsForSale);
 
 router.get("/me", marketplaceControlloer.getLoggedUserItemsForSale);
 
 router
     .route("/:id")
-    .patch(uploadSingleImage("images"), marketplaceControlloer.updateItemForSale)
-    .delete(marketplaceControlloer.deleteItem);
+    .patch(uploadSingleImage("images"), updateItemForSaleValidator, marketplaceControlloer.updateItemForSale)
+    .delete(itemForSaleValidator, marketplaceControlloer.deleteItem);
 
-router.patch("/me/:id", marketplaceControlloer.unAvailable);
+router.patch("/me/:id", itemForSaleValidator, marketplaceControlloer.unAvailable);
 
 export default router;
