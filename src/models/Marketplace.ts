@@ -15,7 +15,7 @@ const marketplaceSchema = new Schema<IMarketplace>(
         address: {
             type: String,
             minlength: 5,
-            maxlength: 5,
+            maxlength: 120,
             required: true,
         },
         price: {
@@ -68,7 +68,8 @@ const marketplaceSchema = new Schema<IMarketplace>(
         tradMark: {
             type: String
         }
-    }
+    },
+    { timestamps: true }
 );
 
 export const Marketplace = model<IMarketplace>("Marketplace", marketplaceSchema);

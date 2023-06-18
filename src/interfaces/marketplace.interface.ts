@@ -46,3 +46,9 @@ export interface UpdateItemForSaleBody extends Partial<ItemForSaleBody> {
     itemForSaleId: string,
     // unAvailable?: boolean
 }
+
+export interface ImageData {
+    userId: string,
+    itemForSaleId: string,
+    imageUrl: string
+}

@@ -4,18 +4,23 @@ import APIError from "../utils/apiError";
 import { errorHandling } from "../utils/errorHandling"
 // import { APIFeature } from "../utils/apiFeature";
 import cloudinary from '../config/coludinaryConfig';
-import { IMarketplace, ItemForSaleBody, UpdateItemForSaleBody } from '../interfaces/marketplace.interface';
 import { getLocationCoordinates } from "../utils/geoLocation";
 import { Marketplace } from '../models/Marketplace';
 import User from '../models/User';
 import { GetUser, IUser } from '../interfaces/user.Interface';
+import {
+    ImageData,
+    IMarketplace,
+    ItemForSaleBody,
+    UpdateItemForSaleBody
+} from '../interfaces/marketplace.interface';
 
 export class MarketplaceService {
 
     createItemForSale = async (itemForSaleBody: ItemForSaleBody): Promise<IMarketplace> => {
         let { images, site, userId } = itemForSaleBody;
 
-        if (images) {
+        if (images.length !== 0) {
             // git longitude and latitude from site, if user not added his site we will get site by his Id
             const geoLocation = await errorHandling(getLocationCoordinates(site)) as {
                 latitude: number | undefined;
@@ -70,6 +75,7 @@ export class MarketplaceService {
         if (images) {
             // store image in cloudinaru and store url in db
             const mediaUrl: any = [];
+            const mediaPublicId: any = [];
             for (const image of images) {
                 const result = await errorHandling(
                     cloudinary.uploader.upload(image.path, {
@@ -78,8 +84,8 @@ export class MarketplaceService {
                         public_id: `${Date.now()}-marketplace`,
                     })
                 ) as UploadApiResponse;
-
                 mediaUrl.push(result.url);
+                mediaPublicId.push(result.public_id);
             }
             updateItemForSaleBody.images = mediaUrl;
         }
@@ -108,15 +114,46 @@ export class MarketplaceService {
             }
         }
 
+        // store images in new variable and delete them from body 
+        const storeImages = updateItemForSaleBody.images;
+        delete updateItemForSaleBody.images;
+
         const itemForSale = await errorHandling(
             Marketplace.findOneAndUpdate(
                 { _id: itemForSaleId, userId },
-                updateItemForSaleBody,
+                {
+                    $addToSet: { images: storeImages },
+                    ...updateItemForSaleBody
+                },
                 { new: true }
             ).populate("userId", "name profileImage")
         ) as IMarketplace;
         if (!itemForSale) throw new APIError(`Can't find item for this id ${itemForSaleId}`, 404);
         return itemForSale;
+    }
+
+    deleteImage = async (imageData: ImageData): Promise<string> => {
+        const { imageUrl, userId, itemForSaleId } = imageData;
+
+        // Extract the path from the image URL
+        const pathMatch = imageUrl.match(/\/v\d+\/([^/]+\/[^/]+\/[^/.]+)/);
+        const imagePublicId = pathMatch ? pathMatch[1] : null;
+
+        if (imagePublicId) {
+            const { result } = await errorHandling(cloudinary.uploader.destroy(imagePublicId)) as { result: string };
+            if (result === "not found") throw new APIError("Image not found", 404)
+
+            const deleteImage = await errorHandling(
+                Marketplace.findOneAndUpdate(
+                    { _id: itemForSaleId, userId },
+                    { $pull: { images: imageUrl } }
+                )
+            ) as IMarketplace;
+            if (!deleteImage) throw new APIError("Can't find item for sale", 400);
+            return "Done"
+        }
+
+        else throw new APIError("Can't get image public id", 400);
     }
 
     unAvailable = async (itemForSaleId: string, userId: string): Promise<string> => {
@@ -154,7 +191,7 @@ export class MarketplaceService {
     }
 
     getLoggedUserItemsForSale = async (userId: string): Promise<IMarketplace> => {
-        const itemsForSale = await errorHandling(Marketplace.findOne({ userId })) as IMarketplace;
+        const itemsForSale = await errorHandling(Marketplace.find({ userId })) as IMarketplace;
         if (!itemsForSale) throw new APIError("Can't find items for sale", 404);
         return itemsForSale
     }

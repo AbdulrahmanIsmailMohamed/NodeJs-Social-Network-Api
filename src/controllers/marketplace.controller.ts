@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { asyncHandler } from "../middlewares/asyncHandlerMW";
 import APIError from "../utils/apiError";
 import { AuthenticatedRequest } from "../interfaces/authentication.interface";
-import { IMarketplace, ItemForSaleBody, UpdateItemForSaleBody } from "../interfaces/marketplace.interface";
+import { IMarketplace, ItemForSaleBody, UpdateItemForSaleBody, ImageData } from "../interfaces/marketplace.interface";
 import { MarketplaceService } from '../services/marketplace.service';
 
 export class MarketplaceControlloer {
@@ -53,6 +53,20 @@ export class MarketplaceControlloer {
             const itemForSale = await this.marketplaceService.updateItemForSale(updateItemForSaleBody)
             if (!itemForSale) return next(new APIError("can't update your item", 400));
             res.status(200).json({ status: "Success", itemForSale });
+        }
+        else return next(new APIError("Please Login", 401));
+    });
+
+    deleteImage = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        if (req.user) {
+            const imageData: ImageData = {
+                imageUrl: req.query.imageUrl as any,
+                userId: req.user._id as string,
+                itemForSaleId: req.params.itemForSaleId
+            }
+
+            const deleteImage: string = await this.marketplaceService.deleteImage(imageData);
+            res.status(204).json({ status: "Success", message: deleteImage });
         }
         else return next(new APIError("Please Login", 401));
     });

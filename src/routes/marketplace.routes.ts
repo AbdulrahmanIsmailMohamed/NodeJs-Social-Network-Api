@@ -19,9 +19,10 @@ router.get("/me", marketplaceControlloer.getLoggedUserItemsForSale);
 
 router
     .route("/:id")
-    .patch(uploadSingleImage("images"), updateItemForSaleValidator, marketplaceControlloer.updateItemForSale)
+    .patch(uploadMedias("images"), updateItemForSaleValidator, marketplaceControlloer.updateItemForSale)
     .delete(itemForSaleValidator, marketplaceControlloer.deleteItem);
 
+router.delete("/image/:itemForSaleId", marketplaceControlloer.deleteImage);
 router.patch("/me/:id", itemForSaleValidator, marketplaceControlloer.unAvailable);
 
 export default router;
