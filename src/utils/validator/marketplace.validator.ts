@@ -166,4 +166,23 @@ export const itemForSaleValidator = [
         }),
 
     validatorMW
+];
+
+export const deleteImageValidator = [
+    check("id")
+        .isMongoId()
+        .withMessage("Invalid Item Id Format!!")
+        .custom(async (val, { req }) => {
+            const isItemForSaleExist = await errorHandling(Marketplace.exists({ _id: val, userId: req.user._id })) as IMarketplace;
+            if (!isItemForSaleExist) throw new APIError("Can't find item", 404)
+            return true;
+        }),
+
+    check("imageUrl")
+        .notEmpty()
+        .withMessage("imageUrl must be not null")
+        .isURL({ require_host: true, require_protocol: true })
+        .withMessage("this url not imageUrl"),
+
+    validatorMW
 ]

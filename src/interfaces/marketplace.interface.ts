@@ -23,6 +23,7 @@ export interface IMarketplace extends Document {
     condition: string,
     availability: Array<Availability>,
     description: string,
+    _id?: ObjectId,
     longitude?: number,
     latitude?: number,
     tradMark?: string,

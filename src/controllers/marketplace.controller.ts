@@ -63,7 +63,7 @@ export class MarketplaceControlloer {
             const imageData: ImageData = {
                 imageUrl: req.query.imageUrl as any,
                 userId: req.user._id as string,
-                itemForSaleId: req.params.itemForSaleId
+                itemForSaleId: req.params.id
             }
 
             const deleteImage: string = await this.marketplaceService.deleteImage(imageData);
@@ -102,7 +102,6 @@ export class MarketplaceControlloer {
                 keyword: req.query.keyword as any,
                 userId: req.user._id
             };
-
 
             const itemsForSale: ItemsForSale = await this.marketplaceService.getItemsForSale(features)
             if (!itemsForSale) return next(new APIError("Can't get items", 404));

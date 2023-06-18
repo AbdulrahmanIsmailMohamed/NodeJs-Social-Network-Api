@@ -3,7 +3,7 @@ import { Router } from "express";
 import { protectRoute } from "../config/auth";
 import { MarketplaceControlloer } from '../controllers/marketplace.controller';
 import { uploadMedias, uploadSingleImage } from "../middlewares/multer";
-import { createItemForSaleValidator, itemForSaleValidator, updateItemForSaleValidator } from '../utils/validator/marketplace.validator';
+import { createItemForSaleValidator, deleteImageValidator, itemForSaleValidator, updateItemForSaleValidator } from '../utils/validator/marketplace.validator';
 
 const router: Router = Router();
 const marketplaceControlloer = new MarketplaceControlloer();
@@ -22,7 +22,7 @@ router
     .patch(uploadMedias("images"), updateItemForSaleValidator, marketplaceControlloer.updateItemForSale)
     .delete(itemForSaleValidator, marketplaceControlloer.deleteItem);
 
-router.delete("/image/:itemForSaleId", marketplaceControlloer.deleteImage);
+router.delete("/image/:id", deleteImageValidator, marketplaceControlloer.deleteImage);
 router.patch("/me/:id", itemForSaleValidator, marketplaceControlloer.unAvailable);
 
 export default router;
