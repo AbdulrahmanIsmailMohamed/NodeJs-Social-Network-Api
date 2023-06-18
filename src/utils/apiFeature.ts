@@ -18,14 +18,26 @@ export class APIFeature<T extends Document> {
         }
     }
 
-    search(): this {
+    search(query?: string): this {
         if (this.queryString.keyword) {
-            const filter: FilterQuery<T> = {
-                $or: [
-                    { firstName: { $regex: this.queryString.keyword, $options: "i" } },
-                    { lastName: { $regex: this.queryString.keyword, $options: "i" } }
-                ]
-            };
+            let filter: FilterQuery<T>;
+            if (query === "Marketplace") {
+                filter = {
+                    $or: [
+                        { description: { $regex: this.queryString.keyword, $options: "i" } },
+                        { site: { $regex: this.queryString.keyword, $options: "i" } },
+                        { address: { $regex: this.queryString.keyword, $options: "i" } }
+                    ]
+                };
+            } else {
+                filter = {
+                    $or: [
+                        { firstName: { $regex: this.queryString.keyword, $options: "i" } },
+                        { lastName: { $regex: this.queryString.keyword, $options: "i" } }
+                    ]
+                };
+            }
+
             this.mongooseQuery = this.mongooseQuery.find(filter);
         }
         return this
@@ -59,6 +71,8 @@ export class APIFeature<T extends Document> {
             query = query.select("name email profileImage");
         } else if (modelName === "posts") {
             query = query.populate("userId", "name profileImage");
+        } else if (modelName === "Marketplace") {
+            query = query.populate("userId", "name profileImage city");
         }
 
         const data: T[] = await query.exec();

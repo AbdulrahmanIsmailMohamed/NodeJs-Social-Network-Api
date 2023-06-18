@@ -1,4 +1,5 @@
 import { Document, ObjectId } from "mongoose"
+import { Paginate } from "./paginate.interface";
 
 export enum Condition {
     "New",
@@ -51,4 +52,9 @@ export interface ImageData {
     userId: string,
     itemForSaleId: string,
     imageUrl: string
+}
+
+export interface ItemsForSale {
+    data: Array<IMarketplace>;
+    paginationResult: Paginate;
 }

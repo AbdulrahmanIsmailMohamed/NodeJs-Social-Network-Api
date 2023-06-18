@@ -2,16 +2,18 @@ import { UploadApiResponse } from "cloudinary";
 
 import APIError from "../utils/apiError";
 import { errorHandling } from "../utils/errorHandling"
-// import { APIFeature } from "../utils/apiFeature";
 import cloudinary from '../config/coludinaryConfig';
 import { getLocationCoordinates } from "../utils/geoLocation";
 import { Marketplace } from '../models/Marketplace';
 import User from '../models/User';
 import { GetUser, IUser } from '../interfaces/user.Interface';
+import { APIFeature } from "../utils/apiFeature";
+import { Features } from "../interfaces/post.interface";
 import {
     ImageData,
     IMarketplace,
     ItemForSaleBody,
+    ItemsForSale,
     UpdateItemForSaleBody
 } from '../interfaces/marketplace.interface';
 
@@ -173,7 +175,9 @@ export class MarketplaceService {
         return "Done"
     }
 
-    getItemsForSale = async (userId: string): Promise<IMarketplace> => {
+    getItemsForSale = async (features: Features):Promise<ItemsForSale> => {
+        const { userId } = features;
+
         const cityOfUser = await errorHandling(User.findOne({ _id: userId }).select("city")) as GetUser;
         if (!cityOfUser.city) throw new APIError("Please Add your city to show items in your city or select show all items", 400);
 
@@ -185,7 +189,10 @@ export class MarketplaceService {
             ]
         }
 
-        const itemsForSale = await errorHandling(Marketplace.find(query)) as IMarketplace;
+        const countDocument = await errorHandling(Marketplace.countDocuments(query)) as number;
+        const apiFeature = new APIFeature(Marketplace.find(query), features).pagination(countDocument).search("Marketplace")
+
+        const itemsForSale = await errorHandling(apiFeature.execute("Marketplace")) as ItemsForSale;
         if (!itemsForSale) throw new APIError("Can't find items for sale", 404);
         return itemsForSale
     }

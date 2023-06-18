@@ -1,10 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 
 import { asyncHandler } from "../middlewares/asyncHandlerMW";
 import APIError from "../utils/apiError";
 import { AuthenticatedRequest } from "../interfaces/authentication.interface";
-import { IMarketplace, ItemForSaleBody, UpdateItemForSaleBody, ImageData } from "../interfaces/marketplace.interface";
+import { IMarketplace, ItemForSaleBody, UpdateItemForSaleBody, ImageData, ItemsForSale } from "../interfaces/marketplace.interface";
 import { MarketplaceService } from '../services/marketplace.service';
+import { Features } from "../interfaces/post.interface";
 
 export class MarketplaceControlloer {
     private marketplaceService: MarketplaceService;
@@ -95,11 +96,23 @@ export class MarketplaceControlloer {
 
     getItemsForSale = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         if (req.user) {
-            const userId = req.user._id as string;
+            const features: Features = {
+                limit: parseInt(req.query.limit as string) || 5,
+                page: parseInt(req.query.page as string) || 1,
+                keyword: req.query.keyword as any,
+                userId: req.user._id
+            };
 
-            const itemsForSale: IMarketplace = await this.marketplaceService.getItemsForSale(userId)
+
+            const itemsForSale: ItemsForSale = await this.marketplaceService.getItemsForSale(features)
             if (!itemsForSale) return next(new APIError("Can't get items", 404));
-            res.status(200).json({ status: "Success", itemsForSale });
+
+            const { data, paginationResult } = itemsForSale;
+            res.status(200).json({
+                status: "Success",
+                pagination: paginationResult,
+                itemsForSale: data
+            });
         }
         else return next(new APIError("Please Login", 401));
     });
