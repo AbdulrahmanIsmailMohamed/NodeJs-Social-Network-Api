@@ -4,6 +4,7 @@ import { validatorMW } from "../../middlewares/validatorMW";
 import APIError from "../apiError";
 import { errorHandling } from "../errorHandling";
 import User from "../../models/User";
+import { IUser } from "../../interfaces/user.Interface";
 
 export const loginValidator = [
     check("email")
@@ -32,11 +33,8 @@ export const registerValidor = [
         .isEmail()
         .withMessage("This email not valid")
         .custom(async (val) => {
-            const user = await errorHandling(
-                User.exists({ email: val }).lean()
-            );
-            if (user)
-                return Promise.reject(new APIError("Your email is exist, please login", 400));
+            const user = await errorHandling(User.exists({ email: val }).lean()) as IUser;
+            if (user) throw new APIError("Your email is exist, please login", 400);
             return true
         }),
     check("name")
@@ -90,6 +88,61 @@ export const registerValidor = [
         .withMessage("Can't access this field")
         .custom((val, { req }) => {
             delete req.body.isAdmin
+        }),
+    validatorMW
+];
+
+export const forgotPasswordValidator = [
+    check("email")
+        .notEmpty()
+        .withMessage("Email Must be not null")
+        .isString()
+        .withMessage("Email Must Be String")
+        .isEmail()
+        .withMessage("Invalid email format")
+        .custom(async (val) => {
+            const isUserExist = await errorHandling(User.exists({ email: val }).lean()) as IUser;
+            if (!isUserExist) throw new APIError("Your Email not exit, please register", 404);
+            return true
+        }),
+    validatorMW
+];
+
+export const verifyResetCodeValidator = [
+    check("resetCode")
+        .notEmpty()
+        .withMessage("resetCode Must be not null")
+        .isString()
+        .withMessage("resetCode Must Be String")
+        .isLength({ min: 6 })
+        .withMessage("Invalid resetCode format!!"),
+    validatorMW
+];
+
+export const resetPasswordValidator = [
+    check("email")
+        .notEmpty()
+        .withMessage("Email Must be not null")
+        .isString()
+        .withMessage("Email Must Be String")
+        .isEmail()
+        .withMessage("Invalid email format")
+        .custom(async (val) => {
+            const isUserExist = await errorHandling(User.exists({ email: val }).lean()) as IUser;
+            if (!isUserExist) throw new APIError("Your Email not exit, please register", 404);
+            return true
+        }),
+    check("password")
+        .notEmpty()
+        .withMessage("The password must be not null")
+        .isString()
+        .withMessage("The password must be String")
+        .isStrongPassword({
+            minLength: 6,
+            minLowercase: 1,
+            minUppercase: 1,
+            minSymbols: 1,
+            minNumbers: 1
         }),
     validatorMW
 ];

@@ -69,7 +69,7 @@ class AuthService {
         <p>The Social-Network Team</p>
       `;
         try {
-            sendMail({
+            await sendMail({
                 email: user.email,
                 message,
                 subject: "Your Password Rest Code (Valid For 10 Minute)"

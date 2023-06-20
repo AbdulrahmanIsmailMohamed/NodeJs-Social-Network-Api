@@ -1,7 +1,5 @@
 import nodeMailer, { Transporter } from "nodemailer";
 import { MailOption, NodemailerOption } from '../interfaces/nodemailer.interface';
-import { errorHandling } from "./errorHandling";
-
 
 export const sendMail = async (options: NodemailerOption) => {
     const transport: Transporter = nodeMailer.createTransport({
@@ -10,8 +8,8 @@ export const sendMail = async (options: NodemailerOption) => {
         secure: true,
         // service: "smtp.gmail.com",
         auth: {
-            user: process.env.MAILRE_USER,
-            pass: process.env.MAILER_PASS
+            user: process.env.MAILRE_USER as string,
+            pass: process.env.MAILRE_PASS as string
         },
 
     });
@@ -23,5 +21,5 @@ export const sendMail = async (options: NodemailerOption) => {
         html: options.message,
     };
 
-    await errorHandling(transport.sendMail(emailOpt));
+    await transport.sendMail(emailOpt);
 }

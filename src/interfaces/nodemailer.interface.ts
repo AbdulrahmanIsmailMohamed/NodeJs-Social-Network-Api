@@ -8,6 +8,5 @@ export interface MailOption {
     from: string,
     to: NodemailerOption["email"],
     subject: NodemailerOption["subject"],
-    html: NodemailerOption["email"],
-
+    html: NodemailerOption["email"]
 }

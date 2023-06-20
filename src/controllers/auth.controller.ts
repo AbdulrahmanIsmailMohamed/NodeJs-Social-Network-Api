@@ -53,7 +53,7 @@ class AuthController {
         });
     });
 
-    forgotPaaword = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    forgotPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const email: string = req.body.email;
 
         const user: string = await this.authService.forgotPassword(email);
@@ -62,9 +62,9 @@ class AuthController {
     });
 
     verifyRestCode = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const resetCode = req.body.resetCode;
+        const resetCode = req.body.resetCode as string;
 
-        const user = this.authService.verifyRestCode(resetCode);
+        const user: string = await this.authService.verifyRestCode(resetCode);
         if (!user) return next(new APIError("Invalid Reset code!", 400));
         res.status(200).json({ status: "Success", message: user })
     });
@@ -72,7 +72,7 @@ class AuthController {
     resetPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         const [email, newPassword] = [req.body.email as string, req.body.password as string];
 
-        const token = this.authService.resetPassword(email, newPassword);
+        const token: string = await this.authService.resetPassword(email, newPassword);
         if (!token) return next(new APIError("You Can't reset password!!", 400));
         res.status(200).json({ status: "Success", token });
     });
