@@ -26,6 +26,9 @@ const userSchema = new Schema<IUser>(
             type: String,
             required: true
         },
+        passwordResetCode: { type: String },
+        passwordResetCodeExpire: { type: Number },
+        passwordResetVerified: { type: Boolean },
         number: {
             type: String,
             required: true

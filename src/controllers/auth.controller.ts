@@ -52,6 +52,31 @@ class AuthController {
             token
         });
     });
+
+    forgotPaaword = asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const email: string = req.body.email;
+
+        const user: string = await this.authService.forgotPassword(email);
+        if (!user) return next(new APIError("Can't reset password", 400));
+        res.status(200).json({ status: "Success", message: user });
+    });
+
+    verifyRestCode = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const resetCode = req.body.resetCode;
+
+        const user = this.authService.verifyRestCode(resetCode);
+        if (!user) return next(new APIError("Invalid Reset code!", 400));
+        res.status(200).json({ status: "Success", message: user })
+    });
+
+    resetPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const [email, newPassword] = [req.body.email as string, req.body.password as string];
+
+        const token = this.authService.resetPassword(email, newPassword);
+        if (!token) return next(new APIError("You Can't reset password!!", 400));
+        res.status(200).json({ status: "Success", token });
+    });
+
 }
 
 export default AuthController;

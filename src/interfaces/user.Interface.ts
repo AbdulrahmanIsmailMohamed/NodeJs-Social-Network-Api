@@ -4,8 +4,11 @@ export interface IUser {
     name: string,
     number: string,
     email: string,
-    password: string,
     city: string,
+    password: string,
+    passwordResetCode?: string,
+    passwordResetCodeExpire?: number,
+    passwordResetVerified?: boolean,
     numberOfFollowers?: number,
     _id?: string
     isAdmin?: boolean,
