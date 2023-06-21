@@ -210,6 +210,8 @@ export class PostService {
 
         const sharePost = await errorHandling(Post.findById(sharePostId)) as any;
         if (!sharePost) throw new APIError("Share post not exist!!", 404);
+        console.log(sharePostId, sharePost);
+        
         const newSharePost = await errorHandling(
             (await Post.create({
                 ...newSharePostBody,

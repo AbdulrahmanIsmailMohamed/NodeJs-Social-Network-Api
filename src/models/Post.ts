@@ -36,17 +36,14 @@ const postShema = new Schema<IPost>(
         sharePost: {
             post: {
                 type: String,
-                required: true
             },
             sharePostId: {
                 type: Schema.Types.ObjectId,
                 ref: "Post",
-                required: true
             },
             ownerPost: {
                 type: Schema.Types.ObjectId,
                 ref: "User",
-                required: true
             },
             media: { type: Array }
         }

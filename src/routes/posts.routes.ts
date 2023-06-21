@@ -6,6 +6,7 @@ import {
     createPostValidator,
     deletePostValidator,
     hideUserPostsValidator,
+    sharePostValidator,
     updatePostValidator
 } from "../utils/validator/posts.validator";
 import { uploadMedias } from "../middlewares/multer";
@@ -30,6 +31,6 @@ router
     .patch(updatePostValidator, postController.updatePost)
     .delete(deletePostValidator, postController.deletePost);
 
-router.post("/share/:sharePostId", postController.sharePost);
+router.post("/share/:sharePostId", sharePostValidator, postController.sharePost);
 
 export default router;
