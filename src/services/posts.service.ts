@@ -15,6 +15,8 @@ import {
     PostSanitize,
     UpdatePost,
     GetAPIFeaturesResult,
+    SharePost,
+    IPost,
 } from '../interfaces/post.interface';
 import { IUser } from "../interfaces/user.Interface";
 
@@ -200,5 +202,39 @@ export class PostService {
 
         const result = await errorHandling(apiFeature.execute("posts")) as GetAPIFeaturesResult;
         return result;
+    }
+
+    sharePost = async (sharePostData: SharePost) => {
+        const { sharePostId, post, postType, userId } = sharePostData;
+        const newSharePostBody = { post, postType, userId };
+
+        const sharePost = await errorHandling(Post.findById(sharePostId)) as any;
+        if (!sharePost) throw new APIError("Share post not exist!!", 404);
+        const newSharePost = await errorHandling(
+            (await Post.create({
+                ...newSharePostBody,
+                sharePost: {
+                    sharePostId,
+                    post: sharePost.post,
+                    ownerPost: sharePost.userId,
+                    media: sharePost.media
+                }
+            })).populate({
+                path: "sharePost",
+                populate: {
+                    path: "ownerPost",
+                    populate: "name profileImage",
+                    select: "name profileImage"
+                }
+            })
+        ) as IPost;
+
+        if (!newSharePost) throw new APIError("Can't share post", 400);
+
+        // update share number in sharePost
+        sharePost.share += 1
+        await errorHandling(sharePost.save());
+
+        return newSharePost;
     }
 }

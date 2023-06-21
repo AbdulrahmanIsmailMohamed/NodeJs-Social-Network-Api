@@ -28,6 +28,8 @@ router
     .route("/:id")
     .post(hideUserPostsValidator, postController.hideUserPosts)
     .patch(updatePostValidator, postController.updatePost)
-    .delete(deletePostValidator, postController.deletePost)
+    .delete(deletePostValidator, postController.deletePost);
+
+router.post("/share/:sharePostId", postController.sharePost);
 
 export default router;

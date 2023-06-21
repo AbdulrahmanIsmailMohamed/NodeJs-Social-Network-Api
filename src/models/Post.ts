@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-import { IPost } from "interfaces/post.interface";
+import { IPost } from "../interfaces/post.interface";
 
 const postShema = new Schema<IPost>(
     {
@@ -32,6 +32,23 @@ const postShema = new Schema<IPost>(
         share: {
             type: Number,
             default: 0
+        },
+        sharePost: {
+            post: {
+                type: String,
+                required: true
+            },
+            sharePostId: {
+                type: Schema.Types.ObjectId,
+                ref: "Post",
+                required: true
+            },
+            ownerPost: {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+                required: true
+            },
+            media: { type: Array }
         }
     },
     { timestamps: true }

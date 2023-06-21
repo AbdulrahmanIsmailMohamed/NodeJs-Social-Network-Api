@@ -10,6 +10,7 @@ import {
     Features,
     GetAPIFeaturesResult,
     PostSanitize,
+    SharePost,
     UpdatePost
 } from "../interfaces/post.interface";
 import { Multer } from "multer";
@@ -139,6 +140,21 @@ export class PostController {
             });
         }
         else return next(new APIError("Please login", 401));
+    });
+
+    sharePost = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        if (req.user) {
+            const sharePostData: SharePost = {
+                post: req.body.post,
+                postType: req.body.postType,
+                sharePostId: req.params.sharePostId,
+                userId: req.user._id as string
+            }
+
+            const sharePost = await this.postService.sharePost(sharePostData);
+            res.status(201).json({ status: "Success", post: sharePost });
+        }
+        else return next(new APIError("you not reqister, please login", 401));
     });
 
 } 

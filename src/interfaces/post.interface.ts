@@ -8,7 +8,12 @@ export interface IPost {
     media?: string,
     likes?: number[],
     fans?: string[],
-    share?: number[],
+    share?: number,
+    sharePost?: {
+        post: string,
+        ownerPost: ObjectId,
+        sharePostId: ObjectId
+    }
 }
 
 export interface CreatePost {
@@ -40,4 +45,8 @@ export interface Features {
 export interface GetAPIFeaturesResult {
     paginationResult: Paginate,
     data: PostSanitize[]
+}
+
+export interface SharePost extends CreatePost {
+    sharePostId: string
 }
