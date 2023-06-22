@@ -24,7 +24,7 @@ const ItemForSale = {
     // image: "images.jpeg"
 }
 
-describe("Post Testing", () => {
+describe("MarketPlace Testing", () => {
     let token: string | undefined;
     before(async () => {
         const res: Response = await server.post("/api/v1/auth/login").send(userData)

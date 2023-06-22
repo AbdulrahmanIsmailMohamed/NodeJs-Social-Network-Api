@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { FavouriteController } from '../controllers/favourite.controller';
 import { protectRoute } from "../config/auth";
 import { addFavouriteValidator } from '../utils/validator/favourite.validator';
