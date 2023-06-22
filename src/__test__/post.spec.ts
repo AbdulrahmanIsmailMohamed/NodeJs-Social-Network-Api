@@ -98,4 +98,31 @@ describe("Post Testing", () => {
             expect(res.status).to.be.equal(400)
         });
     });
+
+    describe("POST /api/v1/posts/share/:sharePostId", () => {
+        it("should share post", async () => {
+            const res = await server.post("/api/v1/posts/share/649273ace01654476dc41f9c")
+                .set("Authorization", `Bearer ${token}`)
+                .send(post)
+
+            expect(res.status).to.be.equal(201);
+        });
+
+        it("should not share post if post not exist", async () => {
+            const res = await server.post("/api/v1/posts/share/6473b4f47fbe5776f8db2f01")
+                .set("Authorization", `Bearer ${token}`)
+                .send(post)
+
+            expect(res.status).to.be.equal(404)
+        });
+    });
+   
+    describe("GET /api/v1/posts/memories", () => {
+        it("Get posts Created on the same day", async () => {
+            const res = await server.get("/api/v1/posts/memories")
+                .set("Authorization", `Bearer ${token}`)
+
+            expect(res.status).to.be.equal(200);
+        });
+    });
 })
