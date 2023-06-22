@@ -1,4 +1,5 @@
 import { UploadApiResponse } from "cloudinary";
+import moment from "moment";
 
 import APIError from "../utils/apiError";
 import Post from "../models/Post"
@@ -210,8 +211,7 @@ export class PostService {
 
         const sharePost = await errorHandling(Post.findById(sharePostId)) as any;
         if (!sharePost) throw new APIError("Share post not exist!!", 404);
-        console.log(sharePostId, sharePost);
-        
+
         const newSharePost = await errorHandling(
             (await Post.create({
                 ...newSharePostBody,
@@ -239,4 +239,26 @@ export class PostService {
 
         return newSharePost;
     }
+
+    postsCreatedOnTheSameDay = async (userId: string) => {
+        const today = moment();
+        const day = today.date();
+        const month = today.month() + 1; // Note: moment's month is zero-based
+
+        const posts = await errorHandling(
+            Post.find({
+                userId,
+                $expr: {
+                    $and: [
+                        { $eq: [{ $dayOfMonth: '$updatedAt' }, day] },
+                        { $eq: [{ $month: '$updatedAt' }, month] }
+                    ]
+                }
+            })
+        ) as IPost;
+
+        if (!posts) throw new APIError("Your not memories on the same day", 404);
+        return posts
+    }
+
 }

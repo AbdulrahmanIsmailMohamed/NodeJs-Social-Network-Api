@@ -157,4 +157,14 @@ export class PostController {
         else return next(new APIError("you not reqister, please login", 401));
     });
 
+    postsCreatedOnTheSameDay = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        if (req.user) {
+            const userId = req.user._id as string
+
+            const posts = await this.postService.postsCreatedOnTheSameDay(userId);
+            res.status(200).json({ status: "Success", posts });
+        }
+        else return next(new APIError("you not reqister, please login", 401));
+    });
+
 } 

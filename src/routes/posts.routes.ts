@@ -17,6 +17,7 @@ const postController = new PostController()
 router.use(protectRoute)
 
 router.get("/me", postController.getLoggedUserPosts)
+router.get("/memories", postController.postsCreatedOnTheSameDay)
 
 router
     .route("/")
