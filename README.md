@@ -1,1 +1,1 @@
-# 🚀 Nodejs Social Network 
+# 🚀 Nodejs Social Network API (Facebook clone)
