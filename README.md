@@ -1,6 +1,6 @@
 # 🚀 Nodejs Social Network API (Facebook clone)
 
-<h3 align="center">Social Network built using NodeJS & Express & MongoDB</h3>
+<h3 align="center">Social Network built using NodeJS & Typescript & Express & MongoDB</h3>
 
 <!-- TABLE OF CONTENTS -->
 <details open="open">
