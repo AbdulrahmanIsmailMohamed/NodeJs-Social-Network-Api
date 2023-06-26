@@ -154,10 +154,6 @@ List of any major frameworks used to build the project.
 * [Mocha](https://www.npmjs.com/package/mocha) - Allow us to test code
 * [chai](https://www.npmjs.com/package/chai) - Allow us to test code
 * [supertest](https://www.npmjs.com/package/supertest) - Allow us to test code
-<<<<<<< HEAD
-=======
-
->>>>>>> 577ac95bd8867487cfbfc1fcaa3314c5a832a0a6
 
 ## Installation
 
