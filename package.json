@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon",
+    "start": "ts-node ./src/index.ts",
+    "start:dev": "nodemon",
     "testfile": "mocha --require ts-node/register  --timeout 10000",
     "test": "NODE_ENV=testing mocha --require ts-node/register  --timeout 10000 src/__test__/**/*.spec.ts",
     "start:prod": "NODE_ENV=production ts-node ./src/index"
