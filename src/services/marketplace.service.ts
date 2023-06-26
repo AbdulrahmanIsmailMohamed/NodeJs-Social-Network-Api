@@ -175,7 +175,7 @@ export class MarketplaceService {
         return "Done"
     }
 
-    getItemsForSale = async (features: Features):Promise<ItemsForSale> => {
+    getItemsForSale = async (features: Features): Promise<ItemsForSale> => {
         const { userId } = features;
 
         const cityOfUser = await errorHandling(User.findOne({ _id: userId }).select("city")) as GetUser;
@@ -190,7 +190,10 @@ export class MarketplaceService {
         }
 
         const countDocument = await errorHandling(Marketplace.countDocuments(query)) as number;
-        const apiFeature = new APIFeature(Marketplace.find(query), features).pagination(countDocument).search("Marketplace")
+        const apiFeature = new APIFeature(Marketplace.find(query), features)
+            .pagination(countDocument)
+            .search("Marketplace")
+            .filter();
 
         const itemsForSale = await errorHandling(apiFeature.execute("Marketplace")) as ItemsForSale;
         if (!itemsForSale) throw new APIError("Can't find items for sale", 404);

@@ -40,6 +40,7 @@ export interface Features {
     userId?: string,
     postId?: string,
     friendId?: string,
+    price?: string,
 }
 
 export interface GetAPIFeaturesResult {

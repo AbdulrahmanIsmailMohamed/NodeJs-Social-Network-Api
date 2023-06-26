@@ -18,6 +18,19 @@ export class APIFeature<T extends Document> {
         }
     }
 
+    filter() {
+        // filtration
+        const queryObj: any = { ...this.queryString };
+        const deleteQuery: Array<string> = ["limit", "page", "keyword"];
+        deleteQuery.forEach((field) => delete queryObj[field]);
+
+        // Apply Filtration Using [gte | gt | lte | lt]
+        let queryStr = JSON.stringify(queryObj);
+        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+        this.mongooseQuery = this.mongooseQuery.find(JSON.parse(queryStr));
+        return this
+    }
+
     search(query?: string): this {
         if (this.queryString.keyword) {
             let filter: FilterQuery<T>;

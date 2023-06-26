@@ -47,7 +47,7 @@ app.use(errorHandling);
 // connectDB And start server
 connectDB();
 const server = app.listen(PORT, () => {
-    console.log(`link: http://localhost:${PORT}/${API}`);
+    console.log(`link: http://localhost:${PORT}${API}`);
     console.log(`The Server Runnig On Port : ${PORT}`);
 });
 

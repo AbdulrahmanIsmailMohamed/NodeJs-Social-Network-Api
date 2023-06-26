@@ -100,7 +100,8 @@ export class MarketplaceControlloer {
                 limit: parseInt(req.query.limit as string) || 5,
                 page: parseInt(req.query.page as string) || 1,
                 keyword: req.query.keyword as any,
-                userId: req.user._id
+                userId: req.user._id,
+                price: req.query.price as string
             };
 
             const itemsForSale: ItemsForSale = await this.marketplaceService.getItemsForSale(features)
