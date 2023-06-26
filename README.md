@@ -42,22 +42,22 @@ API = /api/v1
 NODE_ENV = development
 
 # db
-MONGO_URL = mongodb+srv://abdulrahmanismailmohammed:HV8APWg4Gcoy91ND@social-netwok.hez2c0m.mongodb.net/?retryWrites=true&w=majority
+MONGO_URL = 
 
 # JWT
-JWT_SEC = I LOVE JWT THIS IS MY BESTY 12332313
-JWT_EXPIRE = 30d
+JWT_SEC = 
+JWT_EXPIRE = 
 
 # cloudinary
-CLOUDINARY_CLOUD_NAME = dqm9gatsb
-CLOUDINARY_API_KEY = 135727298987233
-CLOUDINARY_API_SECRET = bxRy88UuqEtMl-prS5dS4pGGGlc
+CLOUDINARY_CLOUD_NAME = 
+CLOUDINARY_API_KEY = 
+CLOUDINARY_API_SECRET = 
 
 # nodemailer
-MAILRE_HOST = smtp.gmail.com
-MAILRE_PORT = 465
-MAILRE_USER = programabdulrahman@gmail.com
-MAILRE_PASS = zibkozvfjaahgsqy
+MAILRE_HOST = 
+MAILRE_PORT = 
+MAILRE_USER = 
+MAILRE_PASS = 
 
 ```
 
