@@ -151,6 +151,9 @@ List of any major frameworks used to build the project.
 * [Winston](https://www.npmjs.com/package/winston) - A logger for just about everything.
 * [node-geocoder](https://www.npmjs.com/package/node-geocoder) -  translating a human-readable address into a location on a map
 * [cloudinary](https://www.npmjs.com/package/cloudinary) - Allow us to store image in cloud
+* [Mocha](https://www.npmjs.com/package/mocha) - Allow us to test code
+* [chai](https://www.npmjs.com/package/chai) - Allow us to test code
+* [supertest](https://www.npmjs.com/package/supertest) - Allow us to test code
 
 ## Installation
 
