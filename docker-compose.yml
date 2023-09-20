@@ -1,0 +1,16 @@
+version: "3"
+services:
+  social-network-api:
+    container_name: social-network-container
+    image: abdulrahman1/social-network-api
+    # ports:
+    #   - "3000:3000"
+
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - social-network-api

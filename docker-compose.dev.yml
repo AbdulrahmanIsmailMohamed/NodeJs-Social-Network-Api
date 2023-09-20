@@ -1,0 +1,10 @@
+version: "3"
+services:
+  social-network-api:
+    build:
+      context: .
+      target: development
+    environment:
+      - NODE_ENV=development
+      - ./.env
+    command: npm run start:div

@@ -2,8 +2,8 @@ import express, { Application, NextFunction, Request, Response } from "express";
 import compression from "compression";
 import cors from "cors";
 import morgan from "morgan";
-import dotenv from "dotenv";
-dotenv.config();
+import { config } from "dotenv";
+config();
 
 import connectDB from "./config/connect";
 import ErrorHandlingMiddleware from "./middlewares/errorHandlingMW";
