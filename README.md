@@ -162,7 +162,7 @@ dependencies by running
 ```
 $ npm install
 set your env variables
-$ npm run start:dev
+$ npm run start
 ``` 
 
 ## Known Bugs
