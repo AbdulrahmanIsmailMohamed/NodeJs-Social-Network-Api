@@ -130,6 +130,8 @@ MAILRE_PASS =
   - Get Logged User Items For Sale [User]
 - Unite Test 
   - I did unit testing on all endpoints by Jest, chai and supertest
+- Docker
+  - it's now easier than ever to deploy and manage this API. Docker simplifies containerization, making it easy to set up, scale, and maintain your applications.
   
 ## Built With
 
