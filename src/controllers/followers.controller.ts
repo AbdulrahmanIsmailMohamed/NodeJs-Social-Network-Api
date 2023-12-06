@@ -1,54 +1,62 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Response } from "express";
 
-import { asyncHandler } from '../middlewares/asyncHandlerMW';
-import { FollowersService } from '../services/followers.service';
-import { AuthenticatedRequest } from '../interfaces/authentication.interface';
-import APIError from '../utils/apiError';
-import { IUser } from '../interfaces/user.Interface';
+import { asyncHandler } from "../middlewares/asyncHandlerMW";
+import { FollowersService } from "../services/followers.service";
+import { AuthenticatedRequest } from "../interfaces/authentication.interface";
+import APIError from "../utils/apiError";
+import { IUser } from "../interfaces/user.Interface";
 
 export class FollowersControllor {
-    private followersService: FollowersService;
-    constructor() {
-        this.followersService = new FollowersService()
+  constructor(private followersService: FollowersService) {}
+
+  followeUser = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+      if (req.user) {
+        const userId = req.user._id as string;
+        const followeUserId: string = req.params.id;
+
+        const followUser = await this.followersService.followUser(
+          followeUserId,
+          userId
+        );
+        if (!followUser) {
+          return next(new APIError("Can't add user to your follow list", 400));
+        }
+
+        res.status(200).json({ status: "Success", message: followUser });
+      } else return next(new APIError("Please login", 401));
     }
+  );
 
-    followeUser = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        if (req.user) {
-            const userId = req.user._id as string;
-            const followeUserId: string = req.params.id;
+  unFolloweUser = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+      if (req.user) {
+        const userId = req.user._id as string;
+        const followeUserId: string = req.params.id;
 
-            const followUser: string = await this.followersService.followUser(followeUserId, userId);
-            if (!followUser) return next(new APIError("Can't add user to your follow list", 400));
-
-            res.status(200).json({ status: "Success", message: followUser })
+        const unFollowUser = await this.followersService.unFollowUser(
+          userId,
+          followeUserId
+        );
+        if (!unFollowUser) {
+          return next(
+            new APIError("Can't Delete user from your follow list", 400)
+          );
         }
+        res.status(200).json({ status: "Success", message: unFollowUser });
+      } else return next(new APIError("Please login", 401));
+    }
+  );
 
-        else return next(new APIError("Please login", 401));
-    });
+  getFollowers = asyncHandler(
+    async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+      if (req.user) {
+        const userId = req.params.id ?? (req.user._id as string);
 
-    unFolloweUser = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        if (req.user) {
-            const userId = req.user._id as string;
-            const followeUserId: string = req.params.id;
-
-            const unFollowUser: string = await this.followersService.unFollowUser(userId, followeUserId);
-            if (!unFollowUser) return next(new APIError("Can't Delete user from your follow list", 400));
-            res.status(200).json({ status: "Success", message: unFollowUser })
-        }
-
-        else return next(new APIError("Please login", 401))
-    });
-
-    getFollowers = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        if (req.user) {
-            const userId = req.params.id ?? req.user._id as string;
-
-            const followers: IUser = await this.followersService.getFollowes(userId);
-            if (!followers) return next(new APIError("Can't find followers", 404));
-            res.status(200).json({ status: "Success", followers });
-        }
-
-        else return next(new APIError("Please login", 401));
-    });
-
+        const followers = await this.followersService.getFollowes(userId);
+        if (!followers) return next(new APIError("Can't find followers", 404));
+        res.status(200).json({ status: "Success", followers });
+      } else return next(new APIError("Please login", 401));
+    }
+  );
 }
