@@ -4,7 +4,6 @@ import Post from "../../models/Post";
 import APIError from "../../utils/apiError";
 import { validatorMW } from "../../middlewares/validatorMW";
 import { Comment } from "../../models/Comments";
-import { PostSanitize } from "../../interfaces/post.interface";
 import { UserId } from "../../interfaces/user.Interface";
 
 export const createCommentValidator = [

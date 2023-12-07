@@ -4,10 +4,12 @@ import { asyncHandler } from "../middlewares/asyncHandlerMW";
 import { FollowersService } from "../services/followers.service";
 import { AuthenticatedRequest } from "../interfaces/authentication.interface";
 import APIError from "../utils/apiError";
-import { IUser } from "../interfaces/user.Interface";
 
 export class FollowersControllor {
-  constructor(private followersService: FollowersService) {}
+  private followersService: FollowersService;
+  constructor() {
+    this.followersService = new FollowersService();
+  }
 
   followeUser = asyncHandler(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

@@ -8,7 +8,10 @@ import { UpdateLoggedUser } from "../interfaces/user.Interface";
 import { Features } from "../interfaces/post.interface";
 
 class UserController {
-  constructor(private userService: UserService) {}
+  private userService: UserService;
+  constructor() {
+    this.userService = new UserService();
+  }
 
   updateLoggedUser = asyncHandler(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

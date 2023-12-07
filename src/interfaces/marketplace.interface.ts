@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, ObjectId } from "mongoose";
 import { Paginate } from "./paginate.interface";
 
 export enum Condition {
@@ -13,7 +13,7 @@ export enum Availability {
 }
 
 export interface IMarketplace extends Document {
-  userId: string;
+  userId: ObjectId;
   address: string;
   price: number;
   category: string;

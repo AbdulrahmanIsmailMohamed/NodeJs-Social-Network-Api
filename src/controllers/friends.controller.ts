@@ -7,7 +7,10 @@ import APIError from "../utils/apiError";
 import { FriendRequest } from "../interfaces/friends.interface";
 
 class FriendsController {
-  constructor(private friendsService: FriendsService) {}
+  private friendsService: FriendsService;
+  constructor() {
+    this.friendsService = new FriendsService();
+  }
 
   sendFriendRequest = asyncHandler(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

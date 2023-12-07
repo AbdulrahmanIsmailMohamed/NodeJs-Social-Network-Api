@@ -13,7 +13,10 @@ import {
 } from "../interfaces/post.interface";
 
 export class PostController {
-  constructor(private postService: PostService) {}
+  private postService: PostService;
+  constructor() {
+    this.postService = new PostService();
+  }
 
   createPost = asyncHandler(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

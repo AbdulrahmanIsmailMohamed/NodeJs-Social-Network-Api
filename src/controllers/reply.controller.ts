@@ -7,7 +7,10 @@ import APIError from "../utils/apiError";
 import { CreateReply, DeleteReply } from "../interfaces/reply.interface";
 
 export class ReplyController {
-  constructor(private replyService: ReplyService) {}
+  private replyService: ReplyService;
+  constructor() {
+    this.replyService = new ReplyService();
+  }
 
   createReply = asyncHandler(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

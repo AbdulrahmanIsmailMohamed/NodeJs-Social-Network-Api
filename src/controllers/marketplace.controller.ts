@@ -4,17 +4,18 @@ import { asyncHandler } from "../middlewares/asyncHandlerMW";
 import APIError from "../utils/apiError";
 import { AuthenticatedRequest } from "../interfaces/authentication.interface";
 import {
-  IMarketplace,
   ItemForSaleBody,
   UpdateItemForSaleBody,
   ImageData,
-  ItemsForSale,
 } from "../interfaces/marketplace.interface";
 import { MarketplaceService } from "../services/marketplace.service";
 import { Features } from "../interfaces/post.interface";
 
 export class MarketplaceControlloer {
-  constructor(private marketplaceService: MarketplaceService) {}
+  private marketplaceService: MarketplaceService;
+  constructor() {
+    this.marketplaceService = new MarketplaceService();
+  }
 
   createItemForSale = asyncHandler(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

@@ -6,7 +6,10 @@ import { LikeData } from "../interfaces/likes.interface";
 import APIError from "../utils/apiError";
 
 export class LikesController {
-  constructor(private likesService: LikesService) {}
+  private likesService: LikesService;
+  constructor() {
+    this.likesService = new LikesService();
+  }
 
   addOrDeleteLike = asyncHandler(
     async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
