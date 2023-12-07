@@ -7,25 +7,8 @@ export interface CreateReply {
     }
 }
 
-export interface ReplySanitize {
-    userId: {
-        name: string,
-        imageProfile: string
-    },
-    comment: string,
-    likes: number,
-    image?: string
-}
-
 export interface DeleteReply {
     commentId: string,
     replyId: string,
     userId: string
-}
-
-export interface ReplyValidator {
-    postId: {
-        userId: string,
-        postType: string
-    }
 }

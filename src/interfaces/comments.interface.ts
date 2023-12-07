@@ -3,8 +3,8 @@ import { Document, ObjectId } from "mongoose";
 import { Paginate } from "./paginate.interface";
 
 export interface IComment extends Document {
-  userId: string;
-  postId: string;
+  userId: ObjectId;
+  postId: ObjectId;
   comment: string;
   likes?: number;
   image?: string;

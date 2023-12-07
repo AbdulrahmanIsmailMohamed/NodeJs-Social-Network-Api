@@ -1,264 +1,298 @@
-import { UploadApiResponse } from "cloudinary";
 import moment from "moment";
 
 import APIError from "../utils/apiError";
-import Post from "../models/Post"
-import { errorHandling } from "../utils/errorHandling"
-import SenitizeData from "../utils/sanitizeData";
+import Post from "../models/Post";
+import { errorHandling } from "../utils/errorHandling";
 import { APIFeature } from "../utils/apiFeature";
-import User from '../models/User';
-import cloudinary from '../config/coludinaryConfig';
+import User from "../models/User";
+import cloudinary from "../config/coludinaryConfig";
 
 import {
-    CreatePost,
-    DeletePost,
-    Features,
-    PostSanitize,
-    UpdatePost,
-    GetAPIFeaturesResult,
-    SharePost,
-    IPost,
-} from '../interfaces/post.interface';
-import { IUser } from "../interfaces/user.Interface";
+  CreatePost,
+  DeletePost,
+  Features,
+  UpdatePost,
+  GetAPIFeaturesResult,
+  SharePost,
+  IPost,
+} from "../interfaces/post.interface";
 
 export class PostService {
-    private senitizeData: SenitizeData;
-    constructor() {
-        this.senitizeData = new SenitizeData()
-    }
+  constructor() {}
 
-    createPost = async (postBody: CreatePost, mediaPath?: Array<Express.Multer.File>): Promise<PostSanitize> => {
-        if (mediaPath) {
-            const mediaUrl: any = [];
-            let format: string = "";
+  createPost = async (
+    postBody: CreatePost,
+    mediaPath?: Array<Express.Multer.File>
+  ): Promise<Partial<IPost>> => {
+    if (mediaPath) {
+      const mediaUrl: any = [];
+      let format: string = "";
 
-            for (const media of mediaPath) {
-                if (media.mimetype.startsWith('image')) {
-                    format = 'jpg'; // Set the format to 'jpg' for image uploads
-                } else if (media.mimetype.startsWith('video')) {
-                    format = 'mp4'; // Set the format to 'mp4' for video uploads
-
-                } else if (media.mimetype.startsWith('application/pdf')) {
-                    format = 'pdf'; // Set the format to 'mp4' for video uploads
-                }
-
-                const result = await errorHandling(
-                    cloudinary.uploader.upload(media.path, {
-                        folder: "uploads/posts",
-                        format,
-                        public_id: `${Date.now()}-posts`,
-                        resource_type: format === 'mp4' ? 'video' : 'image',
-                    })
-                ) as UploadApiResponse;
-                mediaUrl.push(result.url);
-            }
-
-            postBody.media = mediaUrl;
+      for (const media of mediaPath) {
+        if (media.mimetype.startsWith("image")) {
+          format = "jpg"; // Set the format to 'jpg' for image uploads
+        } else if (media.mimetype.startsWith("video")) {
+          format = "mp4"; // Set the format to 'mp4' for video uploads
+        } else if (media.mimetype.startsWith("application/pdf")) {
+          format = "pdf"; // Set the format to 'mp4' for video uploads
         }
 
-        const newPost = await errorHandling(Post.create(postBody)) as PostSanitize;
-        if (!newPost) throw new APIError("Can't create post", 400);
-        return this.senitizeData.post(newPost);
+        const result = await errorHandling(
+          cloudinary.uploader.upload(media.path, {
+            folder: "uploads/posts",
+            format,
+            public_id: `${Date.now()}-posts`,
+            resource_type: format === "mp4" ? "video" : "image",
+          })
+        );
+        mediaUrl.push(result.url);
+      }
+
+      postBody.media = mediaUrl;
     }
 
-    updatePost = async (postBody: UpdatePost): Promise<PostSanitize> => {
-        const { post, userId, postType, postId } = postBody
+    const newPost = await errorHandling(Post.create(postBody));
+    if (!newPost) throw new APIError("Can't create post", 400);
+    return this.removeSensitivePostFields(newPost);
+  };
 
-        const updatePost = await errorHandling(
-            Post.findOneAndUpdate(
-                {
-                    _id: postId,
-                    userId
-                },
-                {
-                    post,
-                    postType
-                },
-                { new: true }
-            )
-        ) as PostSanitize;
-        if (!updatePost) throw new APIError("Can't update post", 400);
-        return this.senitizeData.post(updatePost)
-    }
+  updatePost = async (postBody: UpdatePost): Promise<Partial<IPost>> => {
+    const { post, userId, postType, postId } = postBody;
 
-    deletePost = async (postBody: DeletePost): Promise<string> => {
-        const { postId, userId } = postBody;
+    const updatePost = await errorHandling(
+      Post.findOneAndUpdate(
+        {
+          _id: postId,
+          userId,
+        },
+        {
+          post,
+          postType,
+        },
+        { new: true }
+      ).exec()
+    );
+    if (!updatePost) throw new APIError("Can't update post", 400);
+    return this.removeSensitivePostFields(updatePost);
+  };
 
-        const post = await errorHandling(
-            Post.findOneAndDelete({ _id: postId, userId })
-        ) as PostSanitize;
-        if (!post) throw new APIError("Can't delete post", 400);
-        return "Done"
-    }
+  deletePost = async (postBody: DeletePost): Promise<string> => {
+    const { postId, userId } = postBody;
 
-    getLoggedUserPosts = async (features: Features): Promise<GetAPIFeaturesResult> => {
-        const { userId } = features;
+    const post = await errorHandling(
+      Post.findOneAndDelete({ _id: postId, userId }).exec()
+    );
+    if (!post) throw new APIError("Can't delete post", 400);
+    return "Done";
+  };
 
-        const countDocument: number = await errorHandling(
-            Post.countDocuments({ userId })
-        ) as number;
+  getLoggedUserPosts = async (
+    features: Features
+  ): Promise<GetAPIFeaturesResult> => {
+    const { userId } = features;
 
-        const apiFeature = new APIFeature(Post.find({ userId }), features)
-            .pagination(countDocument);
+    const countDocument: number = await errorHandling(
+      Post.countDocuments({ userId }).exec()
+    );
 
-        const result = await errorHandling(apiFeature.execute("posts")) as GetAPIFeaturesResult;
-        return result;
-    }
+    const apiFeature = new APIFeature(
+      Post.find({ userId }),
+      features
+    ).pagination(countDocument);
 
-    getUserPosts = async (features: Features): Promise<GetAPIFeaturesResult> => {
-        const { userId, friendId } = features;
+    const result = await errorHandling(apiFeature.execute("posts"));
+    return result;
+  };
 
-        const user = await errorHandling(User.findById(userId).select("friends")) as any;
-        if (!user) throw new APIError("Not Found", 404);
+  getUserPosts = async (features: Features): Promise<GetAPIFeaturesResult> => {
+    const { userId, friendId } = features;
 
-        const isUserFriend: boolean = user.friends.includes(friendId);
+    const user = await errorHandling(
+      User.findById(userId).select("friends").exec()
+    );
+    if (!user) throw new APIError("Not Found", 404);
 
-        const query = {
-            userId: friendId,
-            postType: { $in: isUserFriend ? ["public", "friends"] : "public" }
-        };
+    const isUserFriend =
+      user.friends && user.friends.includes(friendId as string);
 
-        const countDocument = await errorHandling(Post.countDocuments(query)) as number;
-        const apiFeature = new APIFeature(Post.find(query), features)
-            .pagination(countDocument);
-        const result = await errorHandling(apiFeature.execute("posts")) as GetAPIFeaturesResult;
+    const query = {
+      userId: friendId,
+      postType: { $in: isUserFriend ? ["public", "friends"] : "public" },
+    };
 
-        return result;
-    }
+    const countDocument = await errorHandling(
+      Post.countDocuments(query).exec()
+    );
+    const apiFeature = new APIFeature(Post.find(query), features).pagination(
+      countDocument
+    );
+    const result = await errorHandling(apiFeature.execute("posts"));
 
-    hideUserPosts = async (postId: string, userId: string): Promise<string> => {
-        const post = await errorHandling(Post.findById(postId).select("userId")) as PostSanitize;
-        if (!post) throw new APIError("Can't find post!", 404);
+    return result;
+  };
 
-        // add userId to hideUserPosts Array
-        const user = await errorHandling(
-            User.findByIdAndUpdate(
-                userId,
-                { $addToSet: { hideUserPosts: post.userId } },
-                { new: true }
-            ).select("hideUserPosts")
-        ) as IUser;
-        if (!user) throw new APIError("Can't find User!", 404);
+  hideUserPosts = async (postId: string, userId: string): Promise<string> => {
+    const post = await errorHandling(
+      Post.findById(postId).select("userId").exec()
+    );
+    if (!post) throw new APIError("Can't find post!", 404);
 
-        // after 1 month userId will delete from hideUserPosts
-        const thirtyDaysInMilliseconds = 24 * 60 * 60 * 1000;
-        setTimeout(async () => {
-            const user = await errorHandling(
-                User.findByIdAndUpdate(
-                    userId,
-                    { $pull: { hideUserPosts: post.userId } },
-                    { new: true }
-                ).select("hideUserPosts")
-            ) as IUser;
-            if (!user) throw new APIError("Occur Error!!", 400);
-            return "Done"
-        }, thirtyDaysInMilliseconds);
+    // add userId to hideUserPosts Array
+    const user = await errorHandling(
+      User.findByIdAndUpdate(
+        userId,
+        { $addToSet: { hideUserPosts: post.userId } },
+        { new: true }
+      )
+        .select("hideUserPosts")
+        .exec()
+    );
+    if (!user) throw new APIError("Can't find User!", 404);
 
-        return "Done"
-    }
+    // after 1 month userId will delete from hideUserPosts
+    const thirtyDaysInMilliseconds = 24 * 60 * 60 * 1000;
+    setTimeout(async () => {
+      const user = await errorHandling(
+        User.findByIdAndUpdate(
+          userId,
+          { $pull: { hideUserPosts: post.userId } },
+          { new: true }
+        )
+          .select("hideUserPosts")
+          .exec()
+      );
+      if (!user) throw new APIError("Occur Error!!", 400);
+      return "Done";
+    }, thirtyDaysInMilliseconds);
 
-    renderTimeline = async (features: Features): Promise<GetAPIFeaturesResult> => {
-        const { userId } = features;
+    return "Done";
+  };
 
-        const user = await errorHandling(
-            User.findOne({ _id: userId })
-                .populate({
-                    path: "friends",
-                    match: { active: { $eq: true } }
-                })
-        ) as any;
-        if (!user) throw new APIError(`Not Found User for this id: ${userId}`, 404);
+  renderTimeline = async (
+    features: Features
+  ): Promise<GetAPIFeaturesResult> => {
+    const { userId } = features;
 
-        const query = {
-            $or: [
-                {
-                    $and: [
-                        { postType: "public" },
-                        {
-                            userId: {
-                                $in: [...user.friends, ...user.followUsers],
-                                $nin: user.hideUserPosts
-                            }
-                        }
-                    ]
-                },
-                {
-                    $and: [
-                        { postType: "friends" },
-                        {
-                            userId: {
-                                $in: user.friends,
-                                $nin: user.hideUserPosts
-                            }
-                        }
-                    ]
-                }
-            ]
-        };
+    const user = await errorHandling(
+      User.findOne({ _id: userId })
+        .populate({
+          path: "friends",
+          match: { active: { $eq: true } },
+        })
+        .exec()
+    );
+    if (!user) throw new APIError(`Not Found User for this id: ${userId}`, 404);
 
-        const countPosts = await errorHandling(Post.countDocuments(query)) as number;
+    const friends = user.friends || [];
+    const followUsers = user.followUsers || [];
+    const hideUserPosts = user.hideUserPosts || [];
 
-        const apiFeature = new APIFeature(Post.find(query), features)
-            .pagination(countPosts);
+    const query = {
+      $or: [
+        {
+          $and: [
+            { postType: "public" },
+            {
+              userId: {
+                $in: [...friends, ...followUsers],
+                $nin: hideUserPosts,
+              },
+            },
+          ],
+        },
+        {
+          $and: [
+            { postType: "friends" },
+            {
+              userId: {
+                $in: friends,
+                $nin: hideUserPosts,
+              },
+            },
+          ],
+        },
+      ],
+    };
 
-        const result = await errorHandling(apiFeature.execute("posts")) as GetAPIFeaturesResult;
-        return result;
-    }
+    const countPosts = await errorHandling(Post.countDocuments(query).exec());
 
-    sharePost = async (sharePostData: SharePost) => {
-        const { sharePostId, post, postType, userId } = sharePostData;
-        const newSharePostBody = { post, postType, userId };
+    const apiFeature = new APIFeature(Post.find(query), features).pagination(
+      countPosts
+    );
 
-        const sharePost = await errorHandling(Post.findById(sharePostId)) as any;
-        if (!sharePost) throw new APIError("Share post not exist!!", 404);
+    const result = (await errorHandling(
+      apiFeature.execute("posts")
+    )) as GetAPIFeaturesResult;
+    return result;
+  };
 
-        const newSharePost = await errorHandling(
-            (await Post.create({
-                ...newSharePostBody,
-                sharePost: {
-                    sharePostId,
-                    post: sharePost.post,
-                    ownerPost: sharePost.userId,
-                    media: sharePost.media
-                }
-            })).populate({
-                path: "sharePost",
-                populate: {
-                    path: "ownerPost",
-                    populate: "name profileImage",
-                    select: "name profileImage"
-                }
-            })
-        ) as IPost;
+  sharePost = async (sharePostData: SharePost) => {
+    const { sharePostId, post, postType, userId } = sharePostData;
+    const newSharePostBody = { post, postType, userId };
 
-        if (!newSharePost) throw new APIError("Can't share post", 400);
+    const sharePost = await errorHandling(Post.findById(sharePostId).exec());
+    if (!sharePost) throw new APIError("Share post not exist!!", 404);
 
-        // update share number in sharePost
-        sharePost.share += 1
-        await errorHandling(sharePost.save());
+    const newSharePost = await errorHandling(
+      (
+        await Post.create({
+          ...newSharePostBody,
+          sharePost: {
+            sharePostId,
+            post: sharePost.post,
+            ownerPost: sharePost.userId,
+            media: sharePost.media,
+          },
+        })
+      ).populate({
+        path: "sharePost",
+        populate: {
+          path: "ownerPost",
+          populate: "name profileImage",
+          select: "name profileImage",
+        },
+      })
+    );
 
-        return newSharePost;
-    }
+    if (!newSharePost) throw new APIError("Can't share post", 400);
 
-    postsCreatedOnTheSameDay = async (userId: string) => {
-        const today = moment();
-        const day = today.date();
-        const month = today.month() + 1; // Note: moment's month is zero-based
+    // update share number in sharePost
+    sharePost.share
+      ? (sharePost.share += 1)
+      : console.log("share is undefined");
+    await errorHandling(sharePost.save());
 
-        const posts = await errorHandling(
-            Post.find({
-                userId,
-                $expr: {
-                    $and: [
-                        { $eq: [{ $dayOfMonth: '$updatedAt' }, day] },
-                        { $eq: [{ $month: '$updatedAt' }, month] }
-                    ]
-                }
-            })
-        ) as IPost;
+    return newSharePost;
+  };
 
-        if (!posts) throw new APIError("Your not memories on the same day", 404);
-        return posts
-    }
+  postsCreatedOnTheSameDay = async (userId: string) => {
+    const today = moment();
+    const day = today.date();
+    const month = today.month() + 1; // Note: moment's month is zero-based
 
+    const posts = await errorHandling(
+      Post.find({
+        userId,
+        $expr: {
+          $and: [
+            { $eq: [{ $dayOfMonth: "$updatedAt" }, day] },
+            { $eq: [{ $month: "$updatedAt" }, month] },
+          ],
+        },
+      }).exec()
+    );
+
+    if (!posts) throw new APIError("Your not memories on the same day", 404);
+    return posts;
+  };
+
+  private removeSensitivePostFields = (post: IPost) => ({
+    _id: post._id,
+    userId: post.userId,
+    post: post.post,
+    postType: post.postType,
+    medias: post.media,
+    likes: post.likes,
+    share: post.share,
+  });
 }
